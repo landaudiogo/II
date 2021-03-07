@@ -1,3 +1,8 @@
+CREATE DATABASE ii; 
+\c ii; 
+
+CREATE SCHEMA mes; 
+
 CREATE TABLE mes.order (
   order_number INTEGER PRIMARY KEY
 ); 
