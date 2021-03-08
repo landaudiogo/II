@@ -1,0 +1,9 @@
+Request: 
+  <Request_Stores/>
+
+Response: 
+  <Current_Stores>
+    <WorkPiece type="Px" quantity="XX"/>
+    <WorkPiece type="Px" quantity="XX"/>
+    ...
+  </Current_Stores>

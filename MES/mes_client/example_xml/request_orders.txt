@@ -1,0 +1,25 @@
+Request: 
+  <Request_Orders/>
+
+
+Response: 
+  <Order_Schedule>
+    <Order Number="nnn">
+      <Transform 
+      From="Px" 
+      To="Py" 
+      Quantity="XX" 
+      Quantity1="X1" 
+      Quantity2="X2"
+      Quantity3="X3" 
+      Time="TT" 
+      Time1="T1" 
+      MaxDelay="DD" 
+      Penalty="PP" 
+      Start="ST"
+      End="ET" 
+      PenaltyIncurred="PI"
+      />
+    </Order>
+    ...
+  </Order_Schedule>
