@@ -6,7 +6,8 @@ def insert_nothing_query(object_to_insert, connection):
         primary_string  = ', '.join(object_to_insert.primary_keys)
         column_value_pairs = object_to_insert._to_dict()
         column_keys = column_value_pairs.keys()
-        columns_string = ', '.join(column_keys)
+        column_names = [f'\"{c_name}\"' for c_name in column_value_pairs.keys()]
+        columns_string = ', '.join(column_names)
 
         safe_insert = [
             '%(' + cname + ')s'
@@ -15,7 +16,7 @@ def insert_nothing_query(object_to_insert, connection):
         safe_insert_format = ', '.join(safe_insert)
 
         individual_condition = [
-            cname + "=%(" + cname + ")s"
+            f'\"{cname}\"' + "=%(" + cname + ")s"
             for cname in column_keys
         ]
         combined_condition = ' AND '.join(individual_condition)

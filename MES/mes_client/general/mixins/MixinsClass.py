@@ -7,6 +7,20 @@ from ..exceptions   import DataException
 from ..utils        import verify_input
 
 
+def convert_to_type(string, col_type):
+    col_type_string = col_type.__class__.__name__
+    if col_type_string == 'INTEGER': 
+        return int(string)
+    if col_type_string == 'Integer': 
+        return int(string)
+    if col_type_string == 'TEXT':
+        return string
+    print(string, col_type_string)
+    raise NotImplementedError()
+
+
+
+
 class MixinsClass:
 
     @classmethod
@@ -42,6 +56,8 @@ class MixinsClass:
         for key, value in object_dictionary.items():
             # 1. Key is belongs to the caller's columns
             if key in self.columns:
+                col_type = getattr(getattr(self.__class__, key), "type")
+                value = convert_to_type(value, col_type)
                 setattr(self, key, value)
 
             # 2. Key is a relationship name

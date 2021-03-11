@@ -13,7 +13,7 @@ class Transform(Base, MixinsDatabase, MixinsClass):
     __tablename__ = 'transform'
     __table_args__ = {'schema': 'mes', 'autoload': True}
     
-    order_number = Column(Integer, ForeignKey('mes.order.order_number'))
+    order_number = Column(Integer, ForeignKey('mes.order.number'))
     order_number._relationship = 'order'
 
     order = relationship('Order', back_populates='transformations')

@@ -1,10 +1,8 @@
-<Order Number="nnn">
+<Order Number="15">
   <Transform 
-  From="Px"
-  To="Py"
-  Quantity="XX"
-  Penalty="PP"
-  Time="TT"
-  MaxDelay="DD"
+  From="M1"
+  To="P2"
+  Quantity="10"
+  Penalty="40"
   />
 </Order>
