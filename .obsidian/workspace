@@ -1,0 +1,91 @@
+{
+  "main": {
+    "id": "676e9df75b69a757",
+    "type": "split",
+    "children": [
+      {
+        "id": "95d856acfbfe3956",
+        "type": "leaf",
+        "active": true,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "MES/README.md",
+            "mode": "source"
+          }
+        }
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "bee121ea1166e7bb",
+    "type": "split",
+    "children": [
+      {
+        "id": "435ecbc768f10658",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "e8865bf7f5711253",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {}
+            }
+          },
+          {
+            "id": "29e534801d087396",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "ad34b48eba7f46c8",
+    "type": "split",
+    "children": [
+      {
+        "id": "9f398c70025de2d3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "7d5429848895ab02",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "MES/README.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "lastOpenFiles": [
+    "MES/README.md"
+  ]
+}
