@@ -39,7 +39,7 @@ def insert_nothing_query(object_to_insert, connection):
             WHERE {combined_condition} 
               AND NOT EXISTS (SELECT * FROM insert_statement)
         '''
-        print(query)
+        # print(query)
         res = (
             connection
             .execute(query, column_value_pairs)

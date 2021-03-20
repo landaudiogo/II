@@ -2,7 +2,8 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import (
     Column, 
     ForeignKey, 
-    Integer
+    Integer, 
+    Boolean
 )
 
 from ..config import Base
@@ -13,6 +14,7 @@ class Transform(Base, MixinsDatabase, MixinsClass):
     __tablename__ = 'transform'
     __table_args__ = {'schema': 'mes', 'autoload': True}
     
+    processed = Column(Boolean, default=False)
     order_number = Column(Integer, ForeignKey('mes.order.number'))
     order_number._relationship = 'order'
 
