@@ -1,3 +1,0 @@
-# PLC
-
-Programmable logic controller
