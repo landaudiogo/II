@@ -6,12 +6,25 @@
       {
         "id": "95d856acfbfe3956",
         "type": "leaf",
+        "dimension": 50.425170068027214,
         "active": true,
         "state": {
           "type": "markdown",
           "state": {
             "file": "MES/mes_client/README.md",
             "mode": "source"
+          }
+        }
+      },
+      {
+        "id": "b503aff9be574abd",
+        "type": "leaf",
+        "dimension": 49.57482993197279,
+        "state": {
+          "type": "markdown",
+          "state": {
+            "file": "MES/mes_client/README.md",
+            "mode": "preview"
           }
         }
       }

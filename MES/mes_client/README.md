@@ -55,9 +55,10 @@ Each transformation also has to have associated to itself an array of piece type
 through which a piece has to go through, to reach the final state.
 
 **Algorithm**
-For one side
-1. Determine the machine's that have vacancies > 0 
-2. Elaborate a query which searches for the next piece to go to the shop floor:
+1. Read the variables from the PLC, which allow us to determine the vacancies in each cell of the shop floor. (pieces in the cell, machine timer's to determine if it is below the threshold)
+1. Compute the machine's that have vacancies > 0 
+2. Considering only the right side of the factory floor, do the next steps, until mentioned otherwise.
+3. Elaborate a query which searches for the next piece to go to the shop floor:
 ```sql
 
 
@@ -65,7 +66,8 @@ with
 	current_final_state as (
 		select 
 			initial_type as current_state, 
-			final_type
+			final_type, 
+			machine
 		from mes.transformations_machine
 		where machine = 2
 	),
@@ -74,7 +76,8 @@ with
 			p.piece_id, 
 			t.transform_id,
 			p.piece_type as current_state,
-			t.list_states[
+			t.priority,
+			t.list_states[ -- indexing the array
 				least(
 					array_position(t.list_states, p.piece_type) + 1, 
 					array_length(t.list_states,1)	
@@ -84,10 +87,16 @@ with
 		inner join mes.transform as t 
 			using (transform_id)	
 	)
-select p.piece_id, p.current_state, p.next_state
+select p.piece_id, p.current_state, p.next_state, c.machine
 from piece_table as p
 inner join current_final_state as c 
 	on p.current_state = c.current_state 
 	and p.next_state = c.final_type
+order by p.priority, p.current_state desc
 
 ```
+3. Based on the machine(s) that have vacancies, determine which is the next piece that should go onto the shop floor, by executing the query.
+4. send the piece to the next piece to the warehouse.
+5. considering only the left side of the shop floor, repeat steps 2 to 4.
+
+
