@@ -15,6 +15,8 @@ def convert_to_type(string, col_type):
         return int(string)
     if col_type_string == 'TEXT':
         return string
+    if col_type_string == 'ARRAY':
+        return list(string)
     print(string, col_type_string)
     raise NotImplementedError()
 

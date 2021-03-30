@@ -10,7 +10,8 @@ from .resources import (
     Machine, 
     Piece, 
     Transform, 
-    Unload
+    Unload, 
+    MesSession
 )
 
 models = [
@@ -18,7 +19,8 @@ models = [
     Machine,
     Piece, 
     Transform, 
-    Unload
+    Unload, 
+    MesSession
 ]
 
 [model() for i in range(2) for model in models]

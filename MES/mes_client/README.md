@@ -60,43 +60,85 @@ through which a piece has to go through, to reach the final state.
 2. Considering only the right side of the factory floor, do the next steps, until mentioned otherwise.
 3. Elaborate a query which searches for the next piece to go to the shop floor:
 ```sql
-
-
 with 
-	current_final_state as (
+    current_final_state as (
+        select 
+            initial_type as current_state, 
+            final_type, 
+            machine
+        from mes.transformations_machine
+        where machine in (1)
+    ),
+    piece_table as (
+        select 
+            p.piece_id, 
+            t.transform_id,
+            p.list_states[array_upper(p.list_states, 1)] as current_state,
+            t.priority,
+            t.list_states[ -- indexing the array
+                least(
+                    array_position(
+						t.list_states, 
+						p.list_states[array_upper(p.list_states, 1)]
+					) + 1, 
+                    array_length(t.list_states,1)   
+                )
+            ] as next_state
+        from mes.piece as p
+        inner join mes.transform as t 
+            using (transform_id)    
+    ), 
+	order_transform as (
 		select 
-			initial_type as current_state, 
-			final_type, 
-			machine
-		from mes.transformations_machine
-		where machine = 2
-	),
-	piece_table as (
-		select 
-			p.piece_id, 
-			t.transform_id,
-			p.piece_type as current_state,
-			t.priority,
-			t.list_states[ -- indexing the array
-				least(
-					array_position(t.list_states, p.piece_type) + 1, 
-					array_length(t.list_states,1)	
-				)
-			] as next_state
-		from mes.piece as p
-		inner join mes.transform as t 
-			using (transform_id)	
+			transform_id, 
+			order_number,
+			row_number() over(
+				partition by order_number order by transform_id
+			) as arrival_order
+		from mes.transform
+		where processed = false
 	)
 select p.piece_id, p.current_state, p.next_state, c.machine
 from piece_table as p
 inner join current_final_state as c 
-	on p.current_state = c.current_state 
-	and p.next_state = c.final_type
+    on p.current_state = c.current_state 
+    and p.next_state = c.final_type
+inner join order_transform as o
+	on p.transform_id = o.transform_id
+where o.arrival_order = 1
 order by p.priority, p.current_state desc
-
 ```
 3. Based on the machine(s) that have vacancies, determine which is the next piece that should go onto the shop floor, by executing the query.
 4. send the piece to the next piece to the warehouse.
 5. considering only the left side of the shop floor, repeat steps 2 to 4.
 
+When receiving the transformations from the erp, the following steps are preformed on all transformations
 
+
+
+```sql
+with 
+	transformation as (
+		select transform_id, list_states, priority
+		from mes.transform
+		where transform_id = 199
+	)
+select * from (
+	select p.*, p.list_states[array_upper(p.list_states, 1)] as last_elem, t.priority
+	from mes.piece as p 
+	left join mes.transform as t using(transform_id)
+	where 
+		array[p.list_states[array_upper(p.list_states, 1)]] <@ (select list_states from transformation)
+		and array[(select list_states[1] from transformation)] <@ p.list_states
+		and coalesce(t.priority, 0) < (select priority from transformation)
+) as t1
+order by last_elem desc
+```
+
+```sql
+delete from mes.mes_session where true;
+delete from mes.piece where true; 
+delete from mes.transform where true;
+delete from mes.unload where true;
+delete from mes.order where true;
+```

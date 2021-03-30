@@ -54,18 +54,12 @@ class ThreadSafeList:
 
 
 
-list_transformations = ThreadSafeList()
-list_unloads = ThreadSafeList()
-
-
 thread_mes_plc = threading.Thread(
     target=thread1, 
-    args=(list_transformations, list_unloads), 
     daemon=True
 )
 thread_mes_erp = threading.Thread(
     target=thread2, 
-    args=(list_transformations, list_unloads), 
     daemon=True
 )
 

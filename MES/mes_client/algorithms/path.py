@@ -28,7 +28,6 @@ class Graph:
     
     def get_path(self, start, node_id_end):
         # arrived at destination
-        print(start.id)
         if start.id == node_id_end: 
             return [start.id]
         
@@ -36,7 +35,6 @@ class Graph:
         for next_node in start.next_nodes:
             if next_node.visited == False: 
                 res = self.get_path(next_node, node_id_end)
-                print(res)
                 if res != None:
                     res.insert(0, start.id)
                     return res

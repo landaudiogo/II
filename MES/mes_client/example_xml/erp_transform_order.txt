@@ -1,8 +1,3 @@
-<Order Number="15">
-  <Transform 
-  From="M1"
-  To="P2"
-  Quantity="10"
-  Penalty="40"
-  />
+<Order Number="104">
+  <Transform From="P2" To="P9" Quantity="17" Time="150" MaxDelay="100" Penalty="100"/>
 </Order>

@@ -7,4 +7,4 @@ node_list[4].add_node_next(node_list[8])
 node_list[5].add_node_next(node_list[7])
 
 G = Graph(node_list)
-print(G.find_path('P2', 'P9'))
+print(G.find_path('P2', 'P8'))
