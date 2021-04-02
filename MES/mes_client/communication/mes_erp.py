@@ -57,7 +57,6 @@ node_list[5].add_node_next(node_list[7])
 ptype_graph = Graph(node_list)
 
 
-
 def process_transformations(order):
     with session_manager() as session: 
         # create the list of transformations limited to 5 elements each
@@ -93,7 +92,7 @@ def process_transformations(order):
             )
             for trans in order.transformations:
                 trans.priority = (
-                    (trans.penalty*exp(-time_diff/1000)) * (order_quantity*len(trans.list_states))
+                    (trans.penalty*exp(-time_diff/100)) * (order_quantity*len(trans.list_states))
                 )
             session.merge(order)
         session.commit()
@@ -124,14 +123,15 @@ def process_transformations(order):
 
 
 
-def process_order(erp_dict):
-    order_dict = erp_dict.get('order') 
+def process_order(order_dict):
     order = Order(**order_dict)
     if order.transformations != []: 
+        print('=== PROCESS TRANSFORMATION ===')
         process_transformations(order)
 
     elif order.unloads != []: 
         with session_manager() as session:
+            print(order.number)
             order.object_insert_or_nothing(session)
 
 
@@ -153,7 +153,7 @@ def process_request_stores():
 def thread2():
 
     HOST = '127.0.0.1'
-    PORT = 5902
+    PORT = 54321
 
     UDPserver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM) 
     UDPserver.bind((HOST, PORT))
@@ -162,11 +162,18 @@ def thread2():
         message, addr = UDPserver.recvfrom(4096)
         erp_dict = parseXML(
             message.decode(), 
-            force_list={'Transform': 'transformations', 'Unload': 'unloads'}
-        )
+            force_list={
+                'Transform': 'transformations', 
+                'Unload': 'unloads',
+                'Order': 'order'
+            }
+        ).get('orders')
 
         if erp_dict.get('order') != None:
-            process_order(erp_dict)
+            for order_dict in erp_dict['order']: 
+                print(order_dict)
+                process_order(order_dict)
+                print('=== 2 === TERMINOU')
         elif erp_dict.get('request_stores') != None: 
             print('request_stores') 
         elif erp_dict.get('request_orders') != None:

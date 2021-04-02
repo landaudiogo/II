@@ -106,7 +106,7 @@ inner join current_final_state as c
 inner join order_transform as o
 	on p.transform_id = o.transform_id
 where o.arrival_order = 1
-order by p.priority, p.current_state desc
+order by p.priority desc, p.current_state desc
 ```
 3. Based on the machine(s) that have vacancies, determine which is the next piece that should go onto the shop floor, by executing the query.
 4. send the piece to the next piece to the warehouse.
@@ -115,6 +115,11 @@ order by p.priority, p.current_state desc
 When receiving the transformations from the erp, the following steps are preformed on all transformations
 
 
+#### Piece eligibility query
+
+This query is used to assign a piece to determine the pieces to assign to a given transformation.
+
+For a given transformation, we search for the pieces we can assign to it which either don't belong to a given transformation, or if it does, that the assigned transformation has lower priority than the this transformation.
 
 ```sql
 with 
@@ -134,6 +139,8 @@ select * from (
 ) as t1
 order by last_elem desc
 ```
+
+the query is then used by the MES_ERP to determine which pieces to associate to a given ID limitted to a certain quantity of that transformation.
 
 ```sql
 delete from mes.mes_session where true;
