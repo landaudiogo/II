@@ -31,7 +31,7 @@ from ..models import (
 with session_manager() as session:
     session_list = session.query(MesSession).all()
     if not session_list:
-        start_time = int(datetime.now().strftime('%s'))
+        start_time = datetime.now().timestamp()
         start_session = MesSession(start_epoch=start_time)
         start_session.object_add(session)
         start_epoch = start_session.start_epoch
@@ -61,7 +61,7 @@ def process_transformations(order):
     with session_manager() as session: 
         # create the list of transformations limited to 5 elements each
         original = order.transformations[0]
-        original.received_time = int(datetime.now().strftime('%s')) - start_epoch
+        original.received_time = datetime.now().timestamp()
         num_trans = ceil(original.quantity/5)
         transformations = [Transform(**original._to_dict()) for i in range(num_trans)]
         order.transformations = transformations

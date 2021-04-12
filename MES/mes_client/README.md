@@ -149,3 +149,20 @@ delete from mes.transform where true;
 delete from mes.unload where true;
 delete from mes.order where true;
 ```
+
+```sql
+select transform_id from (
+	select t.*, t.quantity - count(*) as diff
+	from (
+		select transform_id, list_states[1] as first_state, priority, quantity
+		from mes.transform
+	) as t
+	inner join mes.piece as p
+		using (transform_id)
+	group by t.transform_id, t.first_state, t.priority, t.quantity
+	order by t.priority desc
+) as t1
+where diff > 0
+order by priority desc, diff
+limit 1
+```

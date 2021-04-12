@@ -96,7 +96,7 @@ def next_piece_query(machine_list, connection):
                 from mes.transform
                 where processed = false
             )
-        select p.piece_id, p.current_state, p.next_state, c.machine, p.transform_id
+        select p.piece_id as id, p.current_state as piece_type, c.machine as machine
         from piece_table as p
         inner join current_final_state as c 
             on p.current_state = c.current_state 
@@ -112,7 +112,7 @@ def next_piece_query(machine_list, connection):
         .execute(query)
         .first()
     )
-    print(res)
+    return res[0]
 
 def order_quantity_query(order_number, connection):
     query = f"""
