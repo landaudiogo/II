@@ -2,7 +2,7 @@ from time import sleep
 from .opcua_connection import StartClient
 
 from ..general.queries import next_piece_query
-from ..models import engine
+from ..models import engine, Piece, session_manager
 
 from .factory_floor import (
     vacancies_left,
@@ -36,24 +36,30 @@ def thread1():
             
             # leitura de variaveis
             vacancies_left_side = vacancies_left(client)
-            print('\n')
-            print('\n')
-            print('\n')
-            print('===Left Side===')
-            print(vacancies_left_side)
 
             values_to_update = next_piece(vacancies_left_side)
 
-            print(values_to_update)
+            if  values_to_update:
+                
+                # escrita de variaveis
 
-            # escrita de variaveis
-            
-            if not(warehouse_exit_ALT6_state(client)):
-                update_warehouse_exit('left', values_to_update['id'], values_to_update['machine'], values_to_update['piece_type'], client)  
+                state_L, ready_L, mover_L = warehouse_exit_ALT6_state(client)
 
-            #read_warehouse_entry_left(client)
+                print(state_L)
+                print(ready_L)
+                
+                if not(state_L) and ready_L and not(mover_L):
+                    update_warehouse_exit('left', values_to_update['id'], values_to_update['machine'], values_to_update['piece_type'], client)  
+                    
+                    piece = Piece(piece_id = values_to_update['id'], location = False)
+                    with session_manager() as session:
+                        session.merge(piece)
+                        session.commit()
+                    
+
+                #read_warehouse_entry_left(client)
             
-            sleep(3)
+
 
             # Right side 
 
@@ -63,20 +69,23 @@ def thread1():
             
             values_to_update = next_piece(vacancies_right_side)
 
-            print('===Right Side===')
-            print(vacancies_right_side)
-            print(values_to_update)
+            if  values_to_update:
 
-            if  not values_to_update:
-                continue
+                state_R, ready_R, mover_R = warehouse_exit_ART2_state(client)
+                print(state_R)
+                print(ready_R)
+                
+                # escrita de variaveis
+                if not(state_R) and ready_R and not(mover_R) :
+                    update_warehouse_exit('right', values_to_update['id'], values_to_update['machine'], values_to_update['piece_type'], client)  
+                    
+                    piece = Piece(piece_id = values_to_update['id'], location = False)
+                    with session_manager() as session:
+                        session.merge(piece)
+                        session.commit()
+                    
 
-            # escrita de variaveis
-            if not(warehouse_exit_ART2_state(client)):
-                update_warehouse_exit('right', values_to_update['id'], values_to_update['machine'], values_to_update['piece_type'], client)  
+                #read_warehouse_entry_right(client)
 
-
-            #read_warehouse_entry_right(client)
-
-            sleep(3)
 
     return

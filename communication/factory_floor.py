@@ -7,34 +7,38 @@ from .opcua_connection import StartClient
 
 def warehouse_exit_ART2_state(client):
 
-    conveyer = ['GVL.ART2_S']
+    conveyer = ['GVL.ART2_S', 'Fabrica.tapetelinear_ART2.Ready', 'GVL.MOVER_R']
 
     state = client.read_variables(conveyer)
 
-    return state['GVL.ART2_S']
+    return state['GVL.ART2_S'], state['Fabrica.tapetelinear_ART2.Ready'], state['GVL.MOVER_R']
 
 
 def warehouse_exit_ALT6_state(client):
 
-    conveyer = ['GVL.ALT6_S']
+    conveyer = ['GVL.ALT6_S', 'Fabrica.tapetelinear_ALT6.Ready', 'GVL.MOVER_L']
 
     state = client.read_variables(conveyer)
 
-    return state['GVL.ALT6_S']
+    return state['GVL.ALT6_S'], state['Fabrica.tapetelinear_ALT6.Ready'], state['GVL.MOVER_L']
 
 
 def update_warehouse_exit(side, id, transformation, piece_type, client, unload=0, piece_state=False):
 
     where_to_move = 'R' if side == 'right' else 'L'
 
-    values_to_update = {f'GVL.piece_id' : id, 
-                        f'GVL.tranformation' : transformation, 
-                        f'GVL.done' : piece_state, 
-                        f'GVL.piece_type' : int(piece_type[1]), 
-                        f'GVL.unload' : unload,
+    values_to_update = {f'GVL.piece_id_{where_to_move}' : id, 
+                        f'GVL.tranformation_{where_to_move}' : transformation, 
+                        f'GVL.done_{where_to_move}' : piece_state, 
+                        f'GVL.piece_type_{where_to_move}' : int(piece_type[1]), 
+                        f'GVL.unload_{where_to_move}' : unload,
                         f'GVL.MOVER_{where_to_move}' : True}
     if side == 'right':
         print('values right side')
+        print(values_to_update)
+
+    if side == 'left':
+        print('values left side')
         print(values_to_update)
 
     for key, value in values_to_update.items():
