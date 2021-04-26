@@ -61,7 +61,7 @@ def process_transformations(order):
     with session_manager() as session: 
         # create the list of transformations limited to 5 elements each
         original = order.transformations[0]
-        original.received_time = datetime.now().timestamp()
+        original.received_time = datetime.now().timestamp() - start_epoch
         num_trans = ceil(original.quantity/5)
         transformations = [Transform(**original._to_dict()) for i in range(num_trans)]
         order.transformations = transformations
@@ -83,7 +83,7 @@ def process_transformations(order):
             first_trans = order.transformations[0]
             time_diff = (
                 (first_trans.time + first_trans.maxdelay) -
-                (int(datetime.now().strftime('%s'))-start_epoch)
+                (datetime.now().timestamp() - start_epoch)
             )
             order_quantity = reduce(
                 (lambda x, y: x + y.quantity),
@@ -152,7 +152,7 @@ def process_request_stores():
 
 def thread2():
 
-    HOST = '127.0.0.1'
+    HOST = '0.0.0.0'
     PORT = 54321
 
     UDPserver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM) 
@@ -168,6 +168,7 @@ def thread2():
                 'Order': 'order'
             }
         ).get('orders')
+        print(erp_dict)
 
         if erp_dict.get('order') != None:
             for order_dict in erp_dict['order']: 

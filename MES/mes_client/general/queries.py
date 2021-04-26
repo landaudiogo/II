@@ -85,6 +85,7 @@ def next_piece_query(machine_list, connection):
                 from mes.piece as p
                 inner join mes.transform as t 
                     using (transform_id)    
+                where p.location = True
             ), 
             order_transform as (
                 select 
@@ -112,7 +113,7 @@ def next_piece_query(machine_list, connection):
         .execute(query)
         .first()
     )
-    return res[0]
+    return res
 
 def order_quantity_query(order_number, connection):
     query = f"""

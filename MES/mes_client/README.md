@@ -86,7 +86,8 @@ with
             ] as next_state
         from mes.piece as p
         inner join mes.transform as t 
-            using (transform_id)    
+            using (transform_id) 
+		where p.location = True
     ), 
 	order_transform as (
 		select 
