@@ -7,12 +7,11 @@ from .opcua_connection import StartClient
 
 def warehouse_exit_ART2_state(client):
 
-    conveyer = ['GVL.ART2_S', 'Fabrica.tapetelinear_ART2.ReadyT1', 'Fabrica.tapetelinear_ART2.ReadyT2', 'GVL.MOVER_R']
+    conveyer = ['Fabrica.tapetelinear_ART2.Wait_R.x', 'Machines_Right_Control.ReadyT1', 'Machines_Right_Control.ReadyT2', 'GVL.piece_id_R']
 
     state = client.read_variables(conveyer)
 
-    return state['GVL.ART2_S'], state['Fabrica.tapetelinear_ART2.ReadyT1'], state['Fabrica.tapetelinear_ART2.ReadyT2'], state['GVL.MOVER_R']
-
+    return state['Fabrica.tapetelinear_ART2.Wait_R.x'], state['Machines_Right_Control.ReadyT1'], state['Machines_Right_Control.ReadyT2'],  state['GVL.piece_id_R']
 
 def warehouse_exit_ALT6_state(client):
 
@@ -48,40 +47,46 @@ def update_warehouse_exit(side, id, transformation, piece_type, client, unload=0
 
 def read_warehouse_entry_right(client):
 
-
-    values_to_read = [  'GVL.ART1_S',
-                        'Fabrica.tapetelinear_ART1.piece.piece_id',
-                        'Fabrica.tapetelinear_ART1.piece.transformation', 
-                        'Fabrica.tapetelinear_ART1.piece.done', 'Fabrica.tapetelinear_ART1.piece.piece_type' ]
+    values_to_read = [  'Fabrica.tapetelinear_ART1.Ocupado.x',
+                        'Fabrica.tapetelinear_ART1.inf_tapete.piece_id', 
+                        'Fabrica.tapetelinear_ART1.inf_tapete.transformation', 
+                        'Fabrica.tapetelinear_ART1.inf_tapete.done', 
+                        'Fabrica.tapetelinear_ART1.inf_tapete.piece_type',
+                        'Fabrica.tapetelinear_ART1.inf_tapete.unload' ]
+    
 
     values = client.read_variables(values_to_read)
 
-    if values['GVL.ART1_S']:
+    if values['Fabrica.tapetelinear_ART1.Ocupado.x']:
+        print('=== 1 ===')
 
         with session_manager() as session:
 
-            if values['Fabrica.tapetelinear_ART1.piece.piece_id']:
+            if values['Fabrica.tapetelinear_ART1.inf_tapete.piece_id']:
+                print('=== 2 ===')
 
-                id = values['Fabrica.tapetelinear_ART1.piece.piece_id']
-                piece = Piece(piece_id = id).object_get(session)
+                print('APPEND')
+                piece_id = values['Fabrica.tapetelinear_ART1.inf_tapete.piece_id']
+                piece = Piece(piece_id = piece_id).object_get(session)
+                piece.location = True
 
-                piece_type = values_to_read['Fabrica.tapetelinear_ART1.piece.piece_type'] 
-                piece.list_states.append(piece_type)
+                piece_type = values['Fabrica.tapetelinear_ART1.inf_tapete.piece_type'] 
+                piece.list_states = [elem for elem in [*piece.list_states, f'P{str(piece_type)}']]
+                print(piece)
 
-                session.merge(piece)
                 session.commit()
+                print('SUCCESSFUL COMMIT')
 
             else:
                 
-                piece_type = values_to_read['Fabrica.tapetelinear_ART1.piece.piece_type']
+                piece_type = values['Fabrica.tapetelinear_ART1.inf_tapete.piece_type']
                 piece = Piece()
 
                 piece.list_states = [piece_type]
 
                 piece.object_add(session)
                 
-    
-    client.update_unique_variable('GVL.ART1_I', True)
+        client.update_unique_variable('Fabrica.tapetelinear_ART1.mete_armazem', True)
 
 
 
@@ -97,9 +102,7 @@ def read_warehouse_entry_left(client):
     values = client.read_variables(values_to_read)
     if values['Fabrica.tapetelinear_ALT5.Ocupado.x']:
         with session_manager() as session:
-            print('=== ENTRADA ARMAZEM ===')
             if values['Fabrica.tapetelinear_ALT5.inf_tapete.piece_id']:
-                print('APPEND')
                 piece_id = values['Fabrica.tapetelinear_ALT5.inf_tapete.piece_id']
                 piece = Piece(piece_id = piece_id).object_get(session)
                 piece.location = True
@@ -109,7 +112,6 @@ def read_warehouse_entry_left(client):
                 print(piece)
 
                 session.commit()
-                print('SUCCESSFUL COMMIT')
 
             else:
                 
@@ -120,7 +122,6 @@ def read_warehouse_entry_left(client):
 
                 piece.object_add(session)
                 
-        print('SAIMOS')
         client.update_unique_variable('Fabrica.tapetelinear_ALT5.mete_armazem', True)
 
 
@@ -138,7 +139,8 @@ def vacancies_right(client):
 
 def vacancies_left(client):
 
-    variables = ['Left_Cell_Control.contador2_left', 'Left_Cell_Control.contador3_left']
+    variables = ['Left_Cell_Control.contador2_left', 
+                 'Left_Cell_Control.contador3_left']
 
     state = client.read_variables(variables)
 
