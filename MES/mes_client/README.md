@@ -149,6 +149,7 @@ delete from mes.piece where true;
 delete from mes.transform where true;
 delete from mes.unload where true;
 delete from mes.order where true;
+alter sequence mes.piece_piece_id_seq restart with 1;
 ```
 
 ```sql

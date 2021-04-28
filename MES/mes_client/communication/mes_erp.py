@@ -150,7 +150,7 @@ def process_request_stores():
     return 
 
 
-def thread2():
+def thread2(shared_lock):
 
     HOST = '0.0.0.0'
     PORT = 54321
@@ -158,6 +158,7 @@ def thread2():
     UDPserver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM) 
     UDPserver.bind((HOST, PORT))
 
+    print('=== ERP READY ===')
     while True: 
         message, addr = UDPserver.recvfrom(4096)
         erp_dict = parseXML(
@@ -168,13 +169,13 @@ def thread2():
                 'Order': 'order'
             }
         ).get('orders')
-        print(erp_dict)
 
         if erp_dict.get('order') != None:
+            print('=== ORDER ===')
             for order_dict in erp_dict['order']: 
-                print(order_dict)
-                process_order(order_dict)
-                print('=== 2 === TERMINOU')
+                with shared_lock:
+                    process_order(order_dict)
+            print('erp unlocked')
         elif erp_dict.get('request_stores') != None: 
             print('request_stores') 
         elif erp_dict.get('request_orders') != None:

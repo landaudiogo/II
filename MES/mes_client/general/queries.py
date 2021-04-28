@@ -3,7 +3,6 @@
 def insert_nothing_query(object_to_insert, connection):
         # CONSTRUCTING THE INSERT QUERY
         # https://stackoverflow.com/questions/34708509/how-to-use-returning-with-on-conflict-in-postgresql
-        print(object_to_insert)
         primary_string  = ', '.join(object_to_insert.primary_keys)
         column_value_pairs = object_to_insert._to_dict()
         column_keys = column_value_pairs.keys()
@@ -40,7 +39,6 @@ def insert_nothing_query(object_to_insert, connection):
             WHERE {combined_condition} 
               AND NOT EXISTS (SELECT * FROM insert_statement)
         '''
-        print(query)
         res = (
             connection
             .execute(query, column_value_pairs)
@@ -105,7 +103,7 @@ def next_piece_query(machine_list, connection):
         and p.next_state = c.final_type
     inner join order_transform as o
             on p.transform_id = o.transform_id
-    order by p.priority desc, o.arrival_order, p.quantity, p.current_state desc
+    order by o.arrival_order, p.priority desc, p.quantity desc, p.current_state desc
     '''
 
     res = (
