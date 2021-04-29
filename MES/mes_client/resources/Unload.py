@@ -19,6 +19,7 @@ class Unload(Base, MixinsDatabase, MixinsClass):
     order_number._relationship = 'order'
 
     order = relationship('Order', back_populates='unloads')
+    pieces = relationship('Piece', back_populates='unload')
 
     cls_metadata_set        = False
     cls_relationships_data  = False
