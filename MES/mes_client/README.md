@@ -207,11 +207,15 @@ create trigger associate_transformation
 ```
 
 Trigger to terminate the transformation after a every time a piece state is updated:
-```
-create or replace function mes.piece_update
+```sql
+create or replace function mes.piece_update()
 	returns trigger
 	language plpgsql
 as $$ 
+declare 
+	transform_quantity int;
+	qnt_processed int;
+	last_state text;
 begin
 		if (new.transform_id is not null) then
 		transform_quantity = (
@@ -251,6 +255,58 @@ create trigger piece_update
 	execute procedure mes.piece_update();
 ```
 
+Trigger to add end time to a transformation:
+```sql
+create or replace function mes.transform_end()
+	returns trigger
+	language plpgsql
+as $$
+begin
+	if (new.processed = true) then
+		new.end = (
+			select extract(epoch from now()) - start_epoch
+			from mes.mes_session
+		);
+	end if;
+	return new;
+end;
+$$;
+
+create trigger transform_end_time
+	before update
+	on mes.transform
+	for each row
+	execute procedure mes.transform_end();
+```
+
+Trigger to add start time to transformation:
+```sql
+create or replace function mes.add_start()
+	returns trigger
+	language plpgsql
+as $$
+begin
+	if (
+		(
+			select start 
+			from mes.transform 
+			where transform_id = new.transform_id
+		) is null
+	) then
+		update mes.transform
+		set "start" = (extract(epoch from now())::integer - (select start_epoch from mes_session limit 1))
+		where transform_id = new.transform_id;
+	end if;
+	return new;
+end;
+$$;
+
+create trigger add_start
+	before update
+	on mes.piece
+	for each row
+	execute procedure mes.add_start();
+```
 
 
 
@@ -292,4 +348,76 @@ verifying the processed transformations:
 select * 
 from mes.transform 
 order by processed, "from", "to" desc
+```
+
+
+## Request_Orders
+```sql
+with 
+	transformations as ( 
+		select 
+			order_number, 
+			"from",
+			"to", 
+			sum(quantity) as quantity,
+			"time",
+			received_time as time1,
+			maxdelay,
+			penalty,
+			max("start") as "start",
+			min("end") as "end"
+		from mes.transform
+		group by 
+			order_number,
+			"from",
+			"to", 
+			"time",
+			received_time, 
+			maxdelay, 
+			penalty
+	), 
+	piece_order as (
+		select order_number, current_state, "location", count(*) as amount
+		from (
+			select 
+				p.location, 
+				p.list_states[array_upper(p.list_states, 1)] as current_state, 
+				t.order_number
+			from mes.piece as p
+			inner join mes.transform as t
+				using(transform_id)
+		) as p
+		group by order_number, current_state, "location"
+	),
+	count_not_started as (
+		select t.order_number, count(*) as not_started_count
+		from piece_order as p
+		inner join transformations as t
+			using(order_number)
+		where 
+			t."from" = p.current_state
+			and "location" = true
+		group by t.order_number
+	)
+select 
+	t.order_number, 
+	t."from",
+	t."to",
+	t.quantity, 
+	t.quantity-coalesce(c.not_started_count, 0) as quantity2,
+	c.not_started_count as quantity3,
+	t."time", 
+	t.time1,
+	t.maxdelay, 
+	t.penalty,
+	t."start",
+	t.end, 
+	((
+		coalesce(t."end", extract(epoch from now())::integer - (select start_epoch from mes.mes_session) ) 
+		- t."time"
+	)/50::integer)*t.penalty as penaltyIncurred
+from transformations as t
+left join count_not_started as c
+	using(order_number)	
+order by order_number
 ```
