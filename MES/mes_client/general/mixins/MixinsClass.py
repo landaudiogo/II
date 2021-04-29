@@ -19,6 +19,8 @@ def convert_to_type(string, col_type):
         return list(string)
     if col_type_string == 'BOOLEAN':
         return bool(string)
+    if col_type_string == 'Boolean':
+        return bool(string)
     print(string, col_type_string)
     raise NotImplementedError()
 

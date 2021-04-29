@@ -68,7 +68,7 @@ def process_transformations(order):
         total_qnt = 0
         for trans in order.transformations:
             trans.list_states = ptype_graph.find_path(
-                getattr(trans, 'from'),
+                'P1',
                 getattr(trans, 'to')
             )
             trans.quantity = min(5, original.quantity-total_qnt)
@@ -100,7 +100,8 @@ def process_transformations(order):
         # associate pieces to transformations 
         transformations = (
             session.query(Transform)
-            .order_by(desc(Transform.priority)).all()
+            .order_by(desc(Transform.priority))
+            .filter(Transform.processed == False).all()
         )
         for trans in transformations: 
             with engine.connect() as conn:
@@ -114,11 +115,15 @@ def process_transformations(order):
                     get_piece_ids, 
                     conn
                 )
-
             [session.merge(Piece(piece_id=piece_id, transform_id=trans.transform_id)) 
                 for piece_id in get_piece_ids
             ]
             session.commit()
+            if len(trans.pieces) < trans.quantity:
+                print(f'\n\n===> INCOMPLETE TRANSFORMATION {trans.transform_id}<===')
+            elif len(trans.pieces) > trans.quantity:
+                print(f'=== {trans.transform_id}: {len(trans.pieces)} - {trans.quantity} ===')
+                print(get_piece_ids)
 
 
 
@@ -174,8 +179,9 @@ def thread2(shared_lock):
             print('=== ORDER ===')
             for order_dict in erp_dict['order']: 
                 with shared_lock:
+                    print('ERP lock')
                     process_order(order_dict)
-            print('erp unlocked')
+                print('ERP unlock')
         elif erp_dict.get('request_stores') != None: 
             print('request_stores') 
         elif erp_dict.get('request_orders') != None:

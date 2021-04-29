@@ -68,8 +68,8 @@ def next_piece_query(machine_list, connection):
         piece_table as (
             select 
                 p.piece_id, 
-                t.transform_id,
                 p.list_states[array_upper(p.list_states, 1)] as current_state,
+                t.transform_id,
                 t.priority,
                 t.list_states[ -- indexing the array
                     least(
@@ -84,14 +84,14 @@ def next_piece_query(machine_list, connection):
             from mes.piece as p
             inner join mes.transform as t 
                 using (transform_id)    
-            where p.location = True
+            where p.location = true
         ), 
         order_transform as (
             select 
                 transform_id, 
                 order_number,
                 row_number() over(
-                        partition by order_number order by transform_id
+                    partition by order_number order by transform_id
                 ) as arrival_order
             from mes.transform
             where processed = false
@@ -102,7 +102,7 @@ def next_piece_query(machine_list, connection):
         on p.current_state = c.current_state 
         and p.next_state = c.final_type
     inner join order_transform as o
-            on p.transform_id = o.transform_id
+        on p.transform_id = o.transform_id
     order by o.arrival_order, p.priority desc, p.quantity desc, p.current_state desc
     '''
 
@@ -132,24 +132,42 @@ def order_quantity_query(order_number, connection):
 
 def pieces_for_transformation_query(transform_id, quantity, connection):
     query = f"""
-        with 
-	transformation as (
-		select transform_id, list_states, priority
-		from mes.transform
-		where transform_id = {transform_id}
-	)
-        select * from (
-                select p.*, p.list_states[array_upper(p.list_states, 1)] as last_elem, t.priority
-                from mes.piece as p 
-                left join mes.transform as t using(transform_id)
-                where 
-                        array[p.list_states[array_upper(p.list_states, 1)]] <@ (select list_states from transformation)
-                        and array[(select list_states[1] from transformation)] <@ p.list_states
-                        and coalesce(t.priority, 0) < (select priority from transformation)
-                        and coalesce(t.processed, false) = false
-        ) as t1
-        order by last_elem desc
-        limit {quantity}
+    with 
+        transformation as (
+            select "from", transform_id, list_states, priority
+            from mes.transform
+            where transform_id = {transform_id}
+        )
+    select * from (
+            select 
+                p.*, 
+                p.list_states[array_upper(p.list_states, 1)] as last_elem, 
+                t.priority
+            from mes.piece as p 
+            left join mes.transform as t using(transform_id)
+            where (
+                array[p.list_states[array_upper(p.list_states, 1)]] <@ (select list_states from transformation)
+                and (
+                    (array[(select "from" from transformation)] <@ p.list_states) 
+                    or (p.list_states[array_upper(p.list_states, 1)] < (select "from" from transformation))
+                )
+                and coalesce(t.priority, 0) < (select priority from transformation)
+                and coalesce(t.processed, false) = false
+                and p.location = true
+            ) 
+    ) as t1
+    order by last_elem desc
+    limit (
+		{quantity} - coalesce(
+			(
+				select count(*) as pieces_in_transformation
+				from mes.piece 
+				where transform_id = {transform_id}
+				and location = false
+				group by transform_id
+			), 0
+		)
+    )
     """
     res = (
         connection
@@ -165,8 +183,11 @@ def unset_pieces_query(transform_id, piece_ids, connection):
     query = f"""
         update mes.piece
         set transform_id = null 
-        where not piece_id in ({list_string})
-        and transform_id = {transform_id}
+        where ( 
+            not (piece_id in ({list_string}))
+            and transform_id = {transform_id}
+            and location = true
+        )
     """
     res = (
         connection

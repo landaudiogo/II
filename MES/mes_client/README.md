@@ -168,3 +168,128 @@ where diff > 0
 order by priority desc, diff
 limit 1
 ```
+
+## Trigger functions
+
+Associate transformation when receiving a manually inserted piece in the wearhouse: 
+```sql
+create or replace function mes.associate_transformation()
+	returns trigger
+	language plpgsql
+as $$ 
+begin
+	new.transform_id := (
+		select transform_id from (
+			select t.*, t.quantity - count(*) as diff
+			from (
+				select transform_id, list_states[1] as first_state, priority, quantity
+				from mes.transform
+				where list_states[1] = NEW.list_states[1]
+			) as t
+			inner join mes.piece as p
+				using (transform_id)
+			group by t.transform_id, t.first_state, t.priority, t.quantity
+			order by t.priority desc
+		) as t1
+		where diff > 0
+		order by priority desc, diff
+		limit 1
+	);
+	return new;
+end;
+$$;
+
+create trigger associate_transformation
+	before insert
+	on mes.piece
+	for each row
+	execute procedure mes.associate_transformation();
+```
+
+Trigger to terminate the transformation after a every time a piece state is updated:
+```
+create or replace function mes.piece_update
+	returns trigger
+	language plpgsql
+as $$ 
+begin
+		if (new.transform_id is not null) then
+		transform_quantity = (
+			select quantity 
+			from mes.transform 
+			where transform_id = new.transform_id
+		);
+		last_state = (
+			select list_states[array_upper(list_states, 1)] 
+			from mes.transform 
+			where transform_id = new.transform_id
+		);
+		qnt_processed = (
+			select count(*)
+			from (
+				select 
+					list_states[array_upper(list_states, 1)] as current_state
+				from mes.piece
+				where transform_id = new.transform_id	
+			) as t1
+			where t1.current_state = last_state
+		);
+		if qnt_processed = transform_quantity then
+			update mes.transform
+			set processed = true
+			where transform_id = new.transform_id;
+		end if;
+	end if;
+	return new;
+end;
+$$;
+
+create trigger piece_update
+	after update
+	on mes.piece
+	for each row
+	execute procedure mes.piece_update();
+```
+
+
+
+
+## Sanity Checks
+
+Checking whether any transformations has less pieces associated to it, than it's quantity:
+```sql
+select t.transform_id, t.quantity, p.amount
+from ()
+	select transform_id, count(*) as amount
+	from mes.piece
+	group by transform_id
+) as p
+inner join mes.transform as t
+	using(transform_id)
+where p.amount < t.quantity 
+```
+
+Checking the amount of a certain type associated to a given transformation:
+```sql
+select t.transform_id, t."to", p.current_state, t.quantity, p.amount, t.processed
+from mes.transform as t
+inner join (
+	select transform_id, current_state, count(*) as amount
+	from (
+		select 
+			list_states[array_upper(list_states, 1)] as current_state, 
+			transform_id
+		from mes.piece
+	) as p
+	group by current_state, transform_id
+) as p
+	using(transform_id)
+order by processed, transform_id
+```
+
+verifying the processed transformations:
+```sql
+select * 
+from mes.transform 
+order by processed, "from", "to" desc
+```
