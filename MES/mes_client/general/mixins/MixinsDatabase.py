@@ -208,8 +208,6 @@ class MixinsDatabase:
                 trans.commit()
             return
 
-        print('=== PRINTING THE OBJECT ===')
-        print(self)
         # verify if primary keys are set. If that's the case then we shallow
         # copy the existing object to the caller
         pkey_values = {pkey: getattr(self, pkey) for pkey in self.primary_keys}
@@ -261,10 +259,7 @@ class MixinsDatabase:
             setattr(self, fkey, fkey_value)
 
         # insert the caller 
-        print(stack, id(self))
         if id(self) not in stack:
-            print('=== INSERTING OBJECT ===')
-            print(self)
             insert_nothing_query(self, connection)
             stack.append(id(self))
             

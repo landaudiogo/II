@@ -3,7 +3,6 @@
 def insert_nothing_query(object_to_insert, connection):
         # CONSTRUCTING THE INSERT QUERY
         # https://stackoverflow.com/questions/34708509/how-to-use-returning-with-on-conflict-in-postgresql
-        print(object_to_insert)
         primary_string  = ', '.join(object_to_insert.primary_keys)
         column_value_pairs = object_to_insert._to_dict()
         column_keys = column_value_pairs.keys()
@@ -40,7 +39,6 @@ def insert_nothing_query(object_to_insert, connection):
             WHERE {combined_condition} 
               AND NOT EXISTS (SELECT * FROM insert_statement)
         '''
-        print(query)
         res = (
             connection
             .execute(query, column_value_pairs)
@@ -58,53 +56,54 @@ def next_piece_query(machine_list, connection):
     str_list = [str(elem) for elem in machine_list]
     machine_list_str = ', '.join(str_list)
     query = f'''
-        with 
-            current_final_state as (
-                select 
-                    initial_type as current_state, 
-                    final_type, 
-                    machine
-                from mes.transformations_machine
-                where machine in ({machine_list_str})
-            ),
-            piece_table as (
-                select 
-                    p.piece_id, 
-                    t.transform_id,
-                    p.list_states[array_upper(p.list_states, 1)] as current_state,
-                    t.priority,
-                    t.list_states[ -- indexing the array
-                        least(
-                            array_position(
-                                                        t.list_states, 
-                                                        p.list_states[array_upper(p.list_states, 1)]
-                                                ) + 1, 
-                            array_length(t.list_states,1)   
-                        )
-                    ] as next_state
-                from mes.piece as p
-                inner join mes.transform as t 
-                    using (transform_id)    
-            ), 
-            order_transform as (
-                select 
-                    transform_id, 
-                    order_number,
-                    row_number() over(
-                            partition by order_number order by transform_id
-                    ) as arrival_order
-                from mes.transform
-                where processed = false
-            )
-        select p.piece_id, p.current_state, p.next_state, c.machine, p.transform_id
-        from piece_table as p
-        inner join current_final_state as c 
-            on p.current_state = c.current_state 
-            and p.next_state = c.final_type
-        inner join order_transform as o
-                on p.transform_id = o.transform_id
-        where o.arrival_order = 1
-        order by p.priority desc, p.current_state desc
+    with 
+        current_final_state as (
+            select 
+                initial_type as current_state, 
+                final_type, 
+                machine
+            from mes.transformations_machine
+            where machine in ({machine_list_str})
+        ),
+        piece_table as (
+            select 
+                p.piece_id, 
+                t.transform_id,
+                p.list_states[array_upper(p.list_states, 1)] as current_state,
+                t.priority,
+                t.list_states[ -- indexing the array
+                    least(
+                        array_position(
+                            t.list_states, 
+                            p.list_states[array_upper(p.list_states, 1)]
+                        ) + 1, 
+                        array_length(t.list_states,1)   
+                    )
+                ] as next_state,
+                t.quantity
+            from mes.piece as p
+            inner join mes.transform as t 
+                using (transform_id)    
+            where p.location = True
+        ), 
+        order_transform as (
+            select 
+                transform_id, 
+                order_number,
+                row_number() over(
+                        partition by order_number order by transform_id
+                ) as arrival_order
+            from mes.transform
+            where processed = false
+        )
+    select p.piece_id as id, p.current_state as piece_type, c.machine as machine, p.transform_id
+    from piece_table as p
+    inner join current_final_state as c 
+        on p.current_state = c.current_state 
+        and p.next_state = c.final_type
+    inner join order_transform as o
+            on p.transform_id = o.transform_id
+    order by o.arrival_order, p.priority desc, p.quantity desc, p.current_state desc
     '''
 
     res = (
@@ -112,7 +111,7 @@ def next_piece_query(machine_list, connection):
         .execute(query)
         .first()
     )
-    print(res)
+    return res
 
 def order_quantity_query(order_number, connection):
     query = f"""
@@ -174,5 +173,34 @@ def unset_pieces_query(transform_id, piece_ids, connection):
         .execute(query)
     )
 
+def unload_pieces_query(unload_points_list, connection):
+    str_list = [f'\'{elem}\'' for elem in unload_points_list]
+    unload_list_str = ', '.join(str_list)
+    
+    query = f"""
+        with 
+	piece_type as (
+		select "type" , destination, unload_id
+		from mes.unload 
+		where 
+			destination in ({unload_list_str}) and 
+			(unloaded = false or unloaded is null) 
+		limit 1
+	) 
+    select piece_id as id, p.list_states[array_upper(p.list_states, 1)] as current_state, 
+    (select destination from piece_type) as destination, (select unload_id from piece_type) as unload_id
+    from mes.piece as p
+    where 
+        p.list_states[array_upper(p.list_states, 1)] = (select "type" from piece_type)
+        and  p.unload_id is null
+    limit 1
+    """
+
+    res = (
+        connection
+        .execute(query)
+        .first()
+    )
+    return res
 
 

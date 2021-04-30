@@ -18,8 +18,11 @@ class Piece(Base, MixinsClass, MixinsDatabase):
 
     transform_id = Column(Integer, ForeignKey('mes.transform.transform_id'))
     transform_id._relationship = 'transform'
+    unload_id = Column(Integer, ForeignKey('mes.unload.unload_id'))
+    unload_id._relationship = 'unload'
 
     transform = relationship('Transform', back_populates='pieces')
+    unload = relationship('Unload', back_populates='pieces')
 
     cls_metadata_set        = False
     cls_relationships_data  = False

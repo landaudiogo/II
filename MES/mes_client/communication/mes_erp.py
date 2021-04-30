@@ -31,7 +31,7 @@ from ..models import (
 with session_manager() as session:
     session_list = session.query(MesSession).all()
     if not session_list:
-        start_time = int(datetime.now().strftime('%s'))
+        start_time = datetime.now().timestamp()
         start_session = MesSession(start_epoch=start_time)
         start_session.object_add(session)
         start_epoch = start_session.start_epoch
@@ -61,7 +61,7 @@ def process_transformations(order):
     with session_manager() as session: 
         # create the list of transformations limited to 5 elements each
         original = order.transformations[0]
-        original.received_time = int(datetime.now().strftime('%s')) - start_epoch
+        original.received_time = datetime.now().timestamp() - start_epoch
         num_trans = ceil(original.quantity/5)
         transformations = [Transform(**original._to_dict()) for i in range(num_trans)]
         order.transformations = transformations
@@ -83,7 +83,7 @@ def process_transformations(order):
             first_trans = order.transformations[0]
             time_diff = (
                 (first_trans.time + first_trans.maxdelay) -
-                (int(datetime.now().strftime('%s'))-start_epoch)
+                (datetime.now().timestamp() - start_epoch)
             )
             order_quantity = reduce(
                 (lambda x, y: x + y.quantity),
@@ -150,14 +150,15 @@ def process_request_stores():
     return 
 
 
-def thread2():
+def thread2(shared_lock):
 
-    HOST = '127.0.0.1'
+    HOST = '0.0.0.0'
     PORT = 54321
 
     UDPserver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM) 
     UDPserver.bind((HOST, PORT))
 
+    print('=== ERP READY ===')
     while True: 
         message, addr = UDPserver.recvfrom(4096)
         erp_dict = parseXML(
@@ -170,10 +171,11 @@ def thread2():
         ).get('orders')
 
         if erp_dict.get('order') != None:
+            print('=== ORDER ===')
             for order_dict in erp_dict['order']: 
-                print(order_dict)
-                process_order(order_dict)
-                print('=== 2 === TERMINOU')
+                with shared_lock:
+                    process_order(order_dict)
+            print('erp unlocked')
         elif erp_dict.get('request_stores') != None: 
             print('request_stores') 
         elif erp_dict.get('request_orders') != None:

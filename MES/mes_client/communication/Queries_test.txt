@@ -1,0 +1,16 @@
+with 
+	piece_type as (
+		select "type" , destination
+		from mes.unload 
+		where 
+			destination in ('PM1') and 
+			(unloaded = false or unloaded is null) 
+		limit 1
+	) 
+select piece_id as id, p.list_states[array_upper(p.list_states, 1)] as current_state, 
+(select destination from piece_type) as destination
+from mes.piece as p
+where 
+	p.list_states[array_upper(p.list_states, 1)] = (select "type" from piece_type)
+	and  p.unload_id is null
+limit 1

@@ -52,14 +52,16 @@ class ThreadSafeList:
                 return None
             return self.list
 
-
+shared_lock = threading.Lock()
 
 thread_mes_plc = threading.Thread(
     target=thread1, 
+    args=(shared_lock,),
     daemon=True
 )
 thread_mes_erp = threading.Thread(
     target=thread2, 
+    args=(shared_lock,),
     daemon=True
 )
 

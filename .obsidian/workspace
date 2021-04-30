@@ -7,7 +7,6 @@
         "id": "95d856acfbfe3956",
         "type": "leaf",
         "dimension": 49.91496598639456,
-        "active": true,
         "state": {
           "type": "markdown",
           "state": {
@@ -86,6 +85,8 @@
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
                 "backlinkCollapsed": false,
                 "unlinkedCollapsed": true
               }
@@ -98,6 +99,7 @@
     "width": 300,
     "collapsed": true
   },
+  "active": "95d856acfbfe3956",
   "lastOpenFiles": [
     "MES/mes_client/README.md",
     "MES/README.md"
