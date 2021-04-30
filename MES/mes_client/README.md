@@ -425,7 +425,10 @@ select
 	t."start",
 	t.end, 
 	(greatest(
-		coalesce(t."end", extract(epoch from now())::integer - (select start_epoch from mes.mes_session)) 
+		coalesce(
+			t."end", 
+			extract(epoch from now())::integer - (select start_epoch from mes.mes_session)
+		) 
 		- t."time"
 		- t.maxdelay,
 		0

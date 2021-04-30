@@ -1,6 +1,7 @@
 import socket
 from functools import reduce
 from datetime import datetime
+from xmltodict import unparse
 from math import (
     exp, 
     ceil
@@ -13,7 +14,9 @@ from ..general.exceptions import DataException
 from ..general.queries import (
     order_quantity_query, 
     pieces_for_transformation_query, 
-    unset_pieces_query
+    unset_pieces_query, 
+    request_stores_query,
+    request_orders_query
 )
 from ..algorithms.path import Graph, Node
 from ..models import (
@@ -151,14 +154,44 @@ def process_request_stores():
         request was performed
 
     """
+    with engine.connect() as conn:
+        lst = request_stores_query(conn)
+    dict_for_xml = {
+        'Current_Stores': {
+            'WorkPiece': [{
+                    '@type': row['piece_type'],
+                    '@quantity': row['quantity']
+                }
+                for row in lst
+            ]
+        }
+    }
+    return unparse(dict_for_xml, pretty=True)
 
-    return 
+def process_request_orders(): 
+    with engine.connect() as conn:
+        lst = request_orders_query(conn)
+    dict_for_xml = {
+        'Order_Schedule': {
+            'Order': [{
+                '@Number': row['order_number'],
+                'Transform':
+                    {
+                        f'@{key}': value for key, value in row.items()
+                            if key != 'order_number'
+                    }
+                }
+                for row in lst
+            ]
+        }
+    }
+    return unparse(dict_for_xml, pretty=True)
+    
 
 
 def thread2(shared_lock):
 
-    HOST = '0.0.0.0'
-    PORT = 54321
+    HOST, PORT = '0.0.0.0', 54321
 
     UDPserver = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM) 
     UDPserver.bind((HOST, PORT))
@@ -174,16 +207,21 @@ def thread2(shared_lock):
                 'Order': 'order'
             }
         ).get('orders')
-
         if erp_dict.get('order') != None:
             print('=== ORDER ===')
             for order_dict in erp_dict['order']: 
                 with shared_lock:
                     print('ERP lock')
                     process_order(order_dict)
-                print('ERP unlock')
-        elif erp_dict.get('request_stores') != None: 
-            print('request_stores') 
-        elif erp_dict.get('request_orders') != None:
-            print('request_orders') 
+                    print('ERP unlock')
+        elif 'request_stores' in erp_dict.keys() != None: 
+            message = process_request_stores()
+            bytesToSend = message.encode()
+            UDPserver.sendto(bytesToSend, addr)
+            
+        elif 'request_orders' in erp_dict.keys() != None:
+            message = process_request_orders()
+            bytesToSend = message.encode()
+            UDPserver.sendto(bytesToSend, addr)
+
     return 

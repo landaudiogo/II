@@ -80,7 +80,7 @@ def thread1(shared_lock):
                                 session.commit()
 
                 read_warehouse_entry_right(client)
-            print('PLC unlock')
+                print('PLC unlock')
 
 
     return

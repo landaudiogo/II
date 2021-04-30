@@ -194,5 +194,112 @@ def unset_pieces_query(transform_id, piece_ids, connection):
         .execute(query)
     )
 
+def request_stores_query(connection): 
+    query = '''
+        select 
+            list_states[array_upper(list_states, 1)] as piece_type, 
+            count(*) as quantity
+        from mes.piece 
+        group by list_states[array_upper(list_states, 1)]
+        order by list_states[array_upper(list_states, 1)]
+    '''
+    res = (
+        connection
+        .execute(query)
+        .all()
+    )
+    return res
 
-
+def request_orders_query(connection): 
+    query = '''
+        with 
+            transformations as ( 
+                select 
+                    order_number, 
+                    "from",
+                    "to", 
+                    sum(quantity) as quantity,
+                    "time",
+                    received_time as time1,
+                    maxdelay,
+                    penalty,
+                    max("start") as "start",
+                    case 
+                        when (-1 = ANY(array_agg("end")) IS NULL) then null
+                        else max("end")
+                    end as "end"
+                from mes.transform
+                group by 
+                    order_number,
+                    "from",
+                    "to", 
+                    "time",
+                    received_time, 
+                    maxdelay, 
+                    penalty
+            ), 
+            piece_order as (
+                select 
+                    p.location, 
+                    p.list_states[array_upper(p.list_states, 1)] as current_state, 
+                    array_length(p.list_states, 1) as list_states_length,
+                    t.order_number
+                from mes.piece as p
+                inner join mes.transform as t
+                    using(transform_id)
+            ),
+            count_not_started as (
+                select p.order_number, count(*) as not_started_count
+                from piece_order as p
+                where 
+                    p.list_states_length = 1
+                    and "location" = true
+                group by p.order_number
+            ), 
+            count_finished as (
+                select t.order_number, count(*) as count_finished
+                from piece_order as p
+                inner join transformations as t
+                    using(order_number)
+                where 
+                    t."to" = p.current_state
+                group by t.order_number
+            )
+        select 
+            t.order_number, 
+            t."from",
+            t."to",
+            t.quantity, 
+            coalesce(c1.count_finished, 0) as quantity1,
+            t.quantity
+                - coalesce(c.not_started_count, 0)
+                - coalesce(c1.count_finished, 0) as quantity2,
+            coalesce(c.not_started_count, 0) as quantity3,
+            t."time", 
+            t.time1,
+            t.maxdelay, 
+            t.penalty,
+            t."start",
+            t.end, 
+            (greatest(
+                coalesce(
+                    t."end", 
+                    extract(epoch from now())::integer - (select start_epoch from mes.mes_session)
+                ) 
+                - t."time"
+                - t.maxdelay,
+                0
+            )/50::integer)*t.penalty as penaltyIncurred
+        from transformations as t
+        left join count_not_started as c
+            using(order_number)	
+        left join count_finished as c1
+            using(order_number)	
+        order by order_number
+    '''
+    res = (
+        connection
+        .execute(query)
+        .all()
+    )
+    return res
