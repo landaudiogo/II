@@ -139,7 +139,7 @@ def process_order(order_dict):
 
     elif order.unloads != []: 
         with session_manager() as session:
-            print(order.number)
+            print('=== UNLOAD ===')
             order.object_insert_or_nothing(session)
 
 
@@ -207,6 +207,7 @@ def thread2(shared_lock):
                 'Order': 'order'
             }
         ).get('orders')
+        print(erp_dict)
         if erp_dict.get('order') != None:
             print('=== ORDER ===')
             for order_dict in erp_dict['order']: 

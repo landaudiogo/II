@@ -303,3 +303,40 @@ def request_orders_query(connection):
         .all()
     )
     return res
+
+def unload_pieces_query(unload_points_list, connection):
+    str_list = [f'\'{elem}\'' for elem in unload_points_list]
+    unload_list_str = ', '.join(str_list)
+    
+    query = f"""
+        with 
+        piece_type as (
+            select "type" , destination, unload_id
+            from mes.unload 
+            where 
+                destination in ({unload_list_str}) and 
+                (unloaded = false or unloaded is null) 
+            limit 1
+        ) 
+        select piece_id as id, p.list_states[array_upper(p.list_states, 1)] as current_state, 
+        (select destination from piece_type) as destination, (select unload_id from piece_type) as unload_id
+        from mes.piece as p
+		left join mes.transform as t
+            using(transform_id)
+        where 
+            p.list_states[array_upper(p.list_states, 1)] = (select "type" from piece_type)
+            and  p.unload_id is null
+			and (
+				t.processed = true
+				or (p.transform_id is null)
+			)
+        limit 1
+    """
+
+    res = (
+        connection
+        .execute(query)
+        .first()
+    )
+    return res
+

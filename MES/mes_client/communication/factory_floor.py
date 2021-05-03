@@ -59,7 +59,7 @@ def read_warehouse_entry_right(client):
                 piece_type = values['Fabrica.tapetelinear_ART1.inf_tapete.piece_type']
                 piece = Piece()
 
-                piece.list_states = [piece_type]
+                piece.list_states = [f'P{str(piece_type)}']
 
                 piece.object_add(session)
                 
@@ -125,6 +125,19 @@ def vacancies_left(client):
 
     return state
 
+def unload_vacancies(client):
+
+    variables = ['Unload.nmr_unload_points_1', 
+                'Unload.nmr_unload_points_2', 
+                'Unload.nmr_unload_points_3']
+
+    state = client.read_variables(variables)
+
+    state['PM1'] = state.pop('Unload.nmr_unload_points_1')
+    state['PM2'] = state.pop('Unload.nmr_unload_points_2')
+    state['PM3'] = state.pop('Unload.nmr_unload_points_3')
+
+    return state
 
 
 

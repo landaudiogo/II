@@ -65,7 +65,7 @@ thread_mes_erp = threading.Thread(
     daemon=True
 )
 
-# thread_mes_plc.start()
+thread_mes_plc.start()
 thread_mes_erp.start()
 
 

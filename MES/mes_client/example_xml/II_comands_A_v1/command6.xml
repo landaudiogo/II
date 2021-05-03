@@ -23,15 +23,6 @@
 >
 ]>
 <ORDERS>
-    <Order Number="500">
-        <Unload Type="P2" Destination="PM1" Quantity="10"/>
-    </Order>
-    <Order Number="501">
-        <Unload Type="P3" Destination="PM2" Quantity="15"/>
-    </Order>
-    <Order Number="502">
-        <Unload Type="P4" Destination="PM3" Quantity="5"/>
-    </Order>
+<Request_Stores/>
 </ORDERS>
-
 
