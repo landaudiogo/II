@@ -56,54 +56,54 @@ def next_piece_query(machine_list, connection):
     str_list = [str(elem) for elem in machine_list]
     machine_list_str = ', '.join(str_list)
     query = f'''
-    with 
-        current_final_state as (
-            select 
-                initial_type as current_state, 
-                final_type, 
-                machine
-            from mes.transformations_machine
-            where machine in ({machine_list_str})
-        ),
-        piece_table as (
-            select 
-                p.piece_id, 
-                p.list_states[array_upper(p.list_states, 1)] as current_state,
-                t.transform_id,
-                t.priority,
-                t.list_states[ -- indexing the array
-                    least(
-                        array_position(
-                            t.list_states, 
-                            p.list_states[array_upper(p.list_states, 1)]
-                        ) + 1, 
-                        array_length(t.list_states,1)   
-                    )
-                ] as next_state,
-                t.quantity
-            from mes.piece as p
-            inner join mes.transform as t 
-                using (transform_id)    
-            where p.location = true
-        ), 
-        order_transform as (
-            select 
-                transform_id, 
-                order_number,
-                row_number() over(
-                    partition by order_number order by transform_id
-                ) as arrival_order
-            from mes.transform
-            where processed = false
-        )
-    select p.piece_id as id, p.current_state as piece_type, c.machine as machine, p.transform_id
-    from piece_table as p
-    inner join current_final_state as c 
-        on p.current_state = c.current_state 
-        and p.next_state = c.final_type
-    inner join order_transform as o
-        on p.transform_id = o.transform_id
-    order by o.arrival_order, p.priority desc, p.quantity desc, p.current_state desc
+        with 
+            current_final_state as (
+                select 
+                    initial_type as current_state, 
+                    final_type, 
+                    machine
+                from mes.transformations_machine
+                where machine in ({machine_list_str})
+            ),
+            piece_table as (
+                select 
+                    p.piece_id, 
+                    p.list_states[array_upper(p.list_states, 1)] as current_state,
+                    t.transform_id,
+                    t.priority,
+                    t.list_states[ -- indexing the array
+                        least(
+                            array_position(
+                                t.list_states, 
+                                p.list_states[array_upper(p.list_states, 1)]
+                            ) + 1, 
+                            array_length(t.list_states,1)   
+                        )
+                    ] as next_state,
+                    t.quantity
+                from mes.piece as p
+                inner join mes.transform as t 
+                    using (transform_id)    
+                where p.location = true
+            ), 
+            order_transform as (
+                select 
+                    transform_id, 
+                    order_number,
+                    row_number() over(
+                        partition by order_number order by transform_id
+                    ) as arrival_order
+                from mes.transform
+                where processed = false
+            )
+        select p.piece_id as id, p.current_state as piece_type, c.machine as machine, p.transform_id
+        from piece_table as p
+        inner join current_final_state as c 
+            on p.current_state = c.current_state 
+            and p.next_state = c.final_type
+        inner join order_transform as o
+            on p.transform_id = o.transform_id
+        order by o.arrival_order, p.priority desc, p.quantity desc, p.current_state desc
     '''
 
     res = (

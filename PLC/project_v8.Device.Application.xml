@@ -158,21 +158,6 @@
       <UserDefElement iecname="done" type="T_BOOL" byteoffset="6" vartype="VAR" />
       <UserDefElement iecname="unload" type="T_INT" byteoffset="8" vartype="VAR" />
     </TypeUserDef>
-    <TypeUserDef name="T_Counting_Unloads" size="77" nativesize="88" typeclass="Userdef" pouclass="FUNCTION_BLOCK" iecname="Counting_Unloads">
-      <UserDefElement iecname="s_x" type="T_BOOL" byteoffset="0" vartype="VAR_INPUT" />
-      <UserDefElement iecname="number" type="T_INT" byteoffset="2" vartype="VAR_INPUT" />
-      <UserDefElement iecname="output" type="T_INT" byteoffset="4" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="state" type="T_BOOL" byteoffset="6" vartype="VAR" />
-      <UserDefElement iecname="Init" type="T_SFCStepType" byteoffset="8" vartype="VAR" />
-      <UserDefElement iecname="wait" type="T_SFCStepType" byteoffset="24" vartype="VAR" />
-      <UserDefElement iecname="Step1" type="T_SFCStepType" byteoffset="40" vartype="VAR" />
-      <UserDefElement iecname="Step2" type="T_SFCStepType" byteoffset="56" vartype="VAR" />
-      <UserDefElement iecname="Init__to__wait" type="T_BOOL" byteoffset="72" vartype="VAR" />
-      <UserDefElement iecname="Branch0__wait__to__Step1" type="T_BOOL" byteoffset="73" vartype="VAR" />
-      <UserDefElement iecname="Branch1__wait__to__Init" type="T_BOOL" byteoffset="74" vartype="VAR" />
-      <UserDefElement iecname="Step1__to__Step2" type="T_BOOL" byteoffset="75" vartype="VAR" />
-      <UserDefElement iecname="Step2__to__Init" type="T_BOOL" byteoffset="76" vartype="VAR" />
-    </TypeUserDef>
     <TypeUserDef name="T_IoConfigChannelMap" size="32" nativesize="32" typeclass="Userdef" pouclass="STRUCTURE" iecname="IoConfigChannelMap">
       <UserDefElement iecname="pParameter" type="T_POINTER_TO_IoConfigParameter" byteoffset="0" vartype="VAR" />
       <UserDefElement iecname="pbyIecAddress" type="T_POINTER_TO_BYTE" byteoffset="8" vartype="VAR" />
@@ -636,7 +621,7 @@
       <UserDefElement iecname="Branch1_1__Pronto_Out2__to__Envia_Peca_2_ESQ" type="T_BOOL" byteoffset="1212" vartype="VAR" />
       <UserDefElement iecname="Envia_Peca_2_ESQ__to__Livre" type="T_BOOL" byteoffset="1213" vartype="VAR" />
     </TypeUserDef>
-    <TypeUserDef name="T_Tapete_Rotativo_2In1Out" size="1631" nativesize="2608" typeclass="Userdef" pouclass="FUNCTION_BLOCK" iecname="Tapete_Rotativo_2In1Out">
+    <TypeUserDef name="T_Tapete_Rotativo_2In1Out" size="1507" nativesize="2616" typeclass="Userdef" pouclass="FUNCTION_BLOCK" iecname="Tapete_Rotativo_2In1Out">
       <UserDefElement iecname="out" type="T_STRING" byteoffset="0" vartype="VAR_INPUT" />
       <UserDefElement iecname="p_in1" type="T_STRING" byteoffset="81" vartype="VAR_INPUT" />
       <UserDefElement iecname="p_in2" type="T_STRING" byteoffset="162" vartype="VAR_INPUT" />
@@ -655,58 +640,58 @@
       <UserDefElement iecname="peca_no_destino" type="T_BOOL" byteoffset="495" vartype="VAR_INPUT" />
       <UserDefElement iecname="inf_ant_in1" type="T_conveyer" byteoffset="496" vartype="VAR_INPUT" />
       <UserDefElement iecname="inf_ant_in2" type="T_conveyer" byteoffset="506" vartype="VAR_INPUT" />
-      <UserDefElement iecname="tapete_livre" type="T_BOOL" byteoffset="516" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="R_tap" type="T_BOOL" byteoffset="517" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="Rm_tap" type="T_BOOL" byteoffset="518" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="M_tap" type="T_BOOL" byteoffset="519" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="Mm_tap" type="T_BOOL" byteoffset="520" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="a_enviar_peca" type="T_BOOL" byteoffset="521" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="inf_tapete" type="T_conveyer" byteoffset="522" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="pos_tap" type="T_STRING" byteoffset="532" vartype="VAR" />
-      <UserDefElement iecname="inf_tap" type="T_INT" byteoffset="614" vartype="VAR" />
-      <UserDefElement iecname="_Rm_tap" type="T_SFCActionType" byteoffset="616" vartype="VAR" />
-      <UserDefElement iecname="_R_tap" type="T_SFCActionType" byteoffset="744" vartype="VAR" />
-      <UserDefElement iecname="_tapete_livre" type="T_SFCActionType" byteoffset="872" vartype="VAR" />
-      <UserDefElement iecname="_Mm_tap" type="T_SFCActionType" byteoffset="1000" vartype="VAR" />
-      <UserDefElement iecname="_M_tap" type="T_SFCActionType" byteoffset="1128" vartype="VAR" />
-      <UserDefElement iecname="_a_enviar_peca" type="T_SFCActionType" byteoffset="1256" vartype="VAR" />
-      <UserDefElement iecname="Livre" type="T_SFCStepType" byteoffset="1384" vartype="VAR" />
-      <UserDefElement iecname="In1_peca" type="T_SFCStepType" byteoffset="1400" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_pos1" type="T_SFCStepType" byteoffset="1416" vartype="VAR" />
-      <UserDefElement iecname="In2_peca" type="T_SFCStepType" byteoffset="1432" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_pos2" type="T_SFCStepType" byteoffset="1448" vartype="VAR" />
-      <UserDefElement iecname="Em_pos" type="T_SFCStepType" byteoffset="1464" vartype="VAR" />
-      <UserDefElement iecname="Rec_peca_neg" type="T_SFCStepType" byteoffset="1480" vartype="VAR" />
-      <UserDefElement iecname="Rec_peca_pos" type="T_SFCStepType" byteoffset="1496" vartype="VAR" />
-      <UserDefElement iecname="Peca_in" type="T_SFCStepType" byteoffset="1512" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_vert" type="T_SFCStepType" byteoffset="1528" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_horz" type="T_SFCStepType" byteoffset="1544" vartype="VAR" />
-      <UserDefElement iecname="Ocupado_Orient" type="T_SFCStepType" byteoffset="1560" vartype="VAR" />
-      <UserDefElement iecname="Envia_pos_M" type="T_SFCStepType" byteoffset="1576" vartype="VAR" />
-      <UserDefElement iecname="Envia_pos_Mm" type="T_SFCStepType" byteoffset="1592" vartype="VAR" />
-      <UserDefElement iecname="Branch0__Livre__to__In1_peca" type="T_BOOL" byteoffset="1608" vartype="VAR" />
-      <UserDefElement iecname="Branch0_0__In1_peca__to__Rot_to_pos1" type="T_BOOL" byteoffset="1609" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_pos1__to__Em_pos" type="T_BOOL" byteoffset="1610" vartype="VAR" />
-      <UserDefElement iecname="Branch0_1__In1_peca__to__Em_pos" type="T_BOOL" byteoffset="1611" vartype="VAR" />
-      <UserDefElement iecname="Branch0_2__In1_peca__to__Rot_to_pos2" type="T_BOOL" byteoffset="1612" vartype="VAR" />
-      <UserDefElement iecname="Branch1__Livre__to__In2_peca" type="T_BOOL" byteoffset="1613" vartype="VAR" />
-      <UserDefElement iecname="Branch1_0__In2_peca__to__Em_pos" type="T_BOOL" byteoffset="1614" vartype="VAR" />
-      <UserDefElement iecname="Branch1_1__In2_peca__to__Rot_to_pos2" type="T_BOOL" byteoffset="1615" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_pos2__to__Em_pos" type="T_BOOL" byteoffset="1616" vartype="VAR" />
-      <UserDefElement iecname="Branch1_2__In2_peca__to__Rot_to_pos1" type="T_BOOL" byteoffset="1617" vartype="VAR" />
-      <UserDefElement iecname="Branch0__Em_pos__to__Rec_peca_neg" type="T_BOOL" byteoffset="1618" vartype="VAR" />
-      <UserDefElement iecname="Rec_peca_neg__to__Peca_in" type="T_BOOL" byteoffset="1619" vartype="VAR" />
-      <UserDefElement iecname="Branch1__Em_pos__to__Rec_peca_pos" type="T_BOOL" byteoffset="1620" vartype="VAR" />
-      <UserDefElement iecname="Rec_peca_pos__to__Peca_in" type="T_BOOL" byteoffset="1621" vartype="VAR" />
-      <UserDefElement iecname="Branch0__Peca_in__to__Ocupado_Orient" type="T_BOOL" byteoffset="1622" vartype="VAR" />
-      <UserDefElement iecname="Branch1__Peca_in__to__Rot_to_vert" type="T_BOOL" byteoffset="1623" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_vert__to__Ocupado_Orient" type="T_BOOL" byteoffset="1624" vartype="VAR" />
-      <UserDefElement iecname="Branch2__Peca_in__to__Rot_to_horz" type="T_BOOL" byteoffset="1625" vartype="VAR" />
-      <UserDefElement iecname="Rot_to_horz__to__Ocupado_Orient" type="T_BOOL" byteoffset="1626" vartype="VAR" />
-      <UserDefElement iecname="Branch0__Ocupado_Orient__to__Envia_pos_M" type="T_BOOL" byteoffset="1627" vartype="VAR" />
-      <UserDefElement iecname="Envia_pos_M__to__Livre" type="T_BOOL" byteoffset="1628" vartype="VAR" />
-      <UserDefElement iecname="Branch1__Ocupado_Orient__to__Envia_pos_Mm" type="T_BOOL" byteoffset="1629" vartype="VAR" />
-      <UserDefElement iecname="Envia_pos_Mm__to__Livre" type="T_BOOL" byteoffset="1630" vartype="VAR" />
+      <UserDefElement iecname="tapete_livre1" type="T_BOOL" byteoffset="516" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="tapete_livre2" type="T_BOOL" byteoffset="517" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="R_tap" type="T_BOOL" byteoffset="518" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="Rm_tap" type="T_BOOL" byteoffset="519" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="M_tap" type="T_BOOL" byteoffset="520" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="Mm_tap" type="T_BOOL" byteoffset="521" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="a_enviar_peca" type="T_BOOL" byteoffset="522" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="inf_tapete" type="T_conveyer" byteoffset="524" vartype="VAR_OUTPUT" />
+      <UserDefElement iecname="pos_tap" type="T_STRING" byteoffset="534" vartype="VAR" />
+      <UserDefElement iecname="inf_tap" type="T_INT" byteoffset="616" vartype="VAR" />
+      <UserDefElement iecname="_Rm_tap" type="T_SFCActionType" byteoffset="620" vartype="VAR" />
+      <UserDefElement iecname="_R_tap" type="T_SFCActionType" byteoffset="748" vartype="VAR" />
+      <UserDefElement iecname="_Mm_tap" type="T_SFCActionType" byteoffset="876" vartype="VAR" />
+      <UserDefElement iecname="_M_tap" type="T_SFCActionType" byteoffset="1004" vartype="VAR" />
+      <UserDefElement iecname="_a_enviar_peca" type="T_SFCActionType" byteoffset="1132" vartype="VAR" />
+      <UserDefElement iecname="Livre" type="T_SFCStepType" byteoffset="1260" vartype="VAR" />
+      <UserDefElement iecname="In1_peca" type="T_SFCStepType" byteoffset="1276" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_pos1" type="T_SFCStepType" byteoffset="1292" vartype="VAR" />
+      <UserDefElement iecname="In2_peca" type="T_SFCStepType" byteoffset="1308" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_pos2" type="T_SFCStepType" byteoffset="1324" vartype="VAR" />
+      <UserDefElement iecname="Em_pos" type="T_SFCStepType" byteoffset="1340" vartype="VAR" />
+      <UserDefElement iecname="Rec_peca_neg" type="T_SFCStepType" byteoffset="1356" vartype="VAR" />
+      <UserDefElement iecname="Rec_peca_pos" type="T_SFCStepType" byteoffset="1372" vartype="VAR" />
+      <UserDefElement iecname="Peca_in" type="T_SFCStepType" byteoffset="1388" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_vert" type="T_SFCStepType" byteoffset="1404" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_horz" type="T_SFCStepType" byteoffset="1420" vartype="VAR" />
+      <UserDefElement iecname="Ocupado_Orient" type="T_SFCStepType" byteoffset="1436" vartype="VAR" />
+      <UserDefElement iecname="Envia_pos_M" type="T_SFCStepType" byteoffset="1452" vartype="VAR" />
+      <UserDefElement iecname="Envia_pos_Mm" type="T_SFCStepType" byteoffset="1468" vartype="VAR" />
+      <UserDefElement iecname="Branch0__Livre__to__In1_peca" type="T_BOOL" byteoffset="1484" vartype="VAR" />
+      <UserDefElement iecname="Branch0_0__In1_peca__to__Rot_to_pos1" type="T_BOOL" byteoffset="1485" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_pos1__to__Em_pos" type="T_BOOL" byteoffset="1486" vartype="VAR" />
+      <UserDefElement iecname="Branch0_1__In1_peca__to__Em_pos" type="T_BOOL" byteoffset="1487" vartype="VAR" />
+      <UserDefElement iecname="Branch0_2__In1_peca__to__Rot_to_pos2" type="T_BOOL" byteoffset="1488" vartype="VAR" />
+      <UserDefElement iecname="Branch1__Livre__to__In2_peca" type="T_BOOL" byteoffset="1489" vartype="VAR" />
+      <UserDefElement iecname="Branch1_0__In2_peca__to__Em_pos" type="T_BOOL" byteoffset="1490" vartype="VAR" />
+      <UserDefElement iecname="Branch1_1__In2_peca__to__Rot_to_pos2" type="T_BOOL" byteoffset="1491" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_pos2__to__Em_pos" type="T_BOOL" byteoffset="1492" vartype="VAR" />
+      <UserDefElement iecname="Branch1_2__In2_peca__to__Rot_to_pos1" type="T_BOOL" byteoffset="1493" vartype="VAR" />
+      <UserDefElement iecname="Branch0__Em_pos__to__Rec_peca_neg" type="T_BOOL" byteoffset="1494" vartype="VAR" />
+      <UserDefElement iecname="Rec_peca_neg__to__Peca_in" type="T_BOOL" byteoffset="1495" vartype="VAR" />
+      <UserDefElement iecname="Branch1__Em_pos__to__Rec_peca_pos" type="T_BOOL" byteoffset="1496" vartype="VAR" />
+      <UserDefElement iecname="Rec_peca_pos__to__Peca_in" type="T_BOOL" byteoffset="1497" vartype="VAR" />
+      <UserDefElement iecname="Branch0__Peca_in__to__Ocupado_Orient" type="T_BOOL" byteoffset="1498" vartype="VAR" />
+      <UserDefElement iecname="Branch1__Peca_in__to__Rot_to_vert" type="T_BOOL" byteoffset="1499" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_vert__to__Ocupado_Orient" type="T_BOOL" byteoffset="1500" vartype="VAR" />
+      <UserDefElement iecname="Branch2__Peca_in__to__Rot_to_horz" type="T_BOOL" byteoffset="1501" vartype="VAR" />
+      <UserDefElement iecname="Rot_to_horz__to__Ocupado_Orient" type="T_BOOL" byteoffset="1502" vartype="VAR" />
+      <UserDefElement iecname="Branch0__Ocupado_Orient__to__Envia_pos_M" type="T_BOOL" byteoffset="1503" vartype="VAR" />
+      <UserDefElement iecname="Envia_pos_M__to__Livre" type="T_BOOL" byteoffset="1504" vartype="VAR" />
+      <UserDefElement iecname="Branch1__Ocupado_Orient__to__Envia_pos_Mm" type="T_BOOL" byteoffset="1505" vartype="VAR" />
+      <UserDefElement iecname="Envia_pos_Mm__to__Livre" type="T_BOOL" byteoffset="1506" vartype="VAR" />
     </TypeUserDef>
     <TypeUserDef name="T_Tapete_Rotativo_2In2Out" size="2234" nativesize="3368" typeclass="Userdef" pouclass="FUNCTION_BLOCK" iecname="Tapete_Rotativo_2In2Out">
       <UserDefElement iecname="pos_fixa_inicial" type="T_STRING" byteoffset="0" vartype="VAR_INPUT" />
@@ -1387,39 +1372,36 @@
         <Node name="value" type="T_RE" access="ReadWrite" />
       </Node>
       <Node name="Unload">
+        <Node name="count1" type="T_INT" access="ReadWrite" />
+        <Node name="count2" type="T_INT" access="ReadWrite" />
+        <Node name="count3" type="T_INT" access="ReadWrite" />
         <Node name="nmr_unload_points_1" type="T_INT" access="ReadWrite" />
         <Node name="nmr_unload_points_2" type="T_INT" access="ReadWrite" />
         <Node name="nmr_unload_points_3" type="T_INT" access="ReadWrite" />
+        <Node name="output_timer1" type="T_BOOL" access="ReadWrite" />
+        <Node name="output_timer2" type="T_BOOL" access="ReadWrite" />
+        <Node name="output_timer3" type="T_BOOL" access="ReadWrite" />
         <Node name="rising_edge_tapete_entrada" type="T_BOOL" access="ReadWrite" />
-        <Node name="st11" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st11_output" type="T_INT" access="ReadWrite" />
-        <Node name="st12" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st12_output" type="T_INT" access="ReadWrite" />
-        <Node name="st13" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st13_output" type="T_INT" access="ReadWrite" />
-        <Node name="st21" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st21_output" type="T_INT" access="ReadWrite" />
-        <Node name="st22" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st22_output" type="T_INT" access="ReadWrite" />
-        <Node name="st23" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st23_output" type="T_INT" access="ReadWrite" />
-        <Node name="st31" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st31_output" type="T_INT" access="ReadWrite" />
-        <Node name="st32" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st32_output" type="T_INT" access="ReadWrite" />
-        <Node name="st33" type="T_Counting_Unloads" access="ReadWrite" />
-        <Node name="st33_output" type="T_INT" access="ReadWrite" />
-        <Node name="state11" type="T_INT" access="ReadWrite" />
-        <Node name="state12" type="T_INT" access="ReadWrite" />
-        <Node name="state13" type="T_INT" access="ReadWrite" />
-        <Node name="state21" type="T_INT" access="ReadWrite" />
-        <Node name="state22" type="T_INT" access="ReadWrite" />
-        <Node name="state23" type="T_INT" access="ReadWrite" />
-        <Node name="state31" type="T_INT" access="ReadWrite" />
-        <Node name="state32" type="T_INT" access="ReadWrite" />
-        <Node name="state33" type="T_INT" access="ReadWrite" />
+        <Node name="st11_output" type="T_BOOL" access="ReadWrite" />
+        <Node name="st22_output" type="T_BOOL" access="ReadWrite" />
+        <Node name="st33_output" type="T_BOOL" access="ReadWrite" />
+        <Node name="state1_re" type="T_RE" access="ReadWrite" />
+        <Node name="state2_re" type="T_RE" access="ReadWrite" />
+        <Node name="state3_re" type="T_RE" access="ReadWrite" />
         <Node name="tempo" type="T_TIME" access="ReadWrite" />
+        <Node name="time1" type="T_TIME" access="ReadWrite" />
+        <Node name="time2" type="T_TIME" access="ReadWrite" />
+        <Node name="time3" type="T_TIME" access="ReadWrite" />
+        <Node name="timer1" type="T_TON" access="ReadWrite" />
+        <Node name="timer2" type="T_TON" access="ReadWrite" />
+        <Node name="timer3" type="T_TON" access="ReadWrite" />
+        <Node name="vacancies1" type="T_INT" access="ReadWrite" />
+        <Node name="vacancies2" type="T_INT" access="ReadWrite" />
+        <Node name="vacancies3" type="T_INT" access="ReadWrite" />
         <Node name="value" type="T_RE" access="ReadWrite" />
+        <Node name="varBOOL1" type="T_BOOL" access="ReadWrite" />
+        <Node name="varBOOL2" type="T_BOOL" access="ReadWrite" />
+        <Node name="varBOOL3" type="T_BOOL" access="ReadWrite" />
       </Node>
     </Node>
   </NodeList>

@@ -49,8 +49,8 @@ def thread1(shared_lock):
             # Left side
             
             # leitura de variaveis
+            sleep(0.1)
             with shared_lock:
-                print('plc lock')
                 state_L, ready_T2, ready_T3, curr_piece = warehouse_exit_ALT6_state(client)
                 if not curr_piece:
                     vacancies_left_side = vacancies_left(client)
@@ -92,7 +92,6 @@ def thread1(shared_lock):
                                 session.merge(piece)
                                 session.commit()
                     else:
-                        print("here")
                         vacancies_to_unload = unload_vacancies(client) 
                         values_to_unload = next_unload(vacancies_to_unload)
 
@@ -105,6 +104,6 @@ def thread1(shared_lock):
                                     session.commit()                       
 
                 read_warehouse_entry_right(client)
-                print('plc unlock')
+
 
     return

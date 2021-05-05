@@ -127,18 +127,14 @@ def vacancies_left(client):
 
 def unload_vacancies(client):
 
-    variables = ['Unload.nmr_unload_points_1', 
-                'Unload.nmr_unload_points_2', 
-                'Unload.nmr_unload_points_3']
+    variables = ['Unload.vacancies1', 
+                 'Unload.vacancies2', 
+                 'Unload.vacancies3']
 
     state = client.read_variables(variables)
 
-    state['PM1'] = state.pop('Unload.nmr_unload_points_1')
-    state['PM2'] = state.pop('Unload.nmr_unload_points_2')
-    state['PM3'] = state.pop('Unload.nmr_unload_points_3')
+    state['PM1'] = state.pop('Unload.vacancies1')
+    state['PM2'] = state.pop('Unload.vacancies2')
+    state['PM3'] = state.pop('Unload.vacancies3')
 
     return state
-
-
-
-

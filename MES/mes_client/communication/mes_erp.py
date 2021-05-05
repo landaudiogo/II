@@ -1,4 +1,5 @@
 import socket
+import time
 from functools import reduce
 from datetime import datetime
 from xmltodict import unparse
@@ -28,6 +29,9 @@ from ..models import (
     session_manager,
     engine
 )
+
+
+MAX_PIECES_IN_TRANSFORMATION = 5
 
 
 # start_time
@@ -60,24 +64,8 @@ node_list[5].add_node_next(node_list[7])
 ptype_graph = Graph(node_list)
 
 
-def process_transformations(order):
+def process_transformations():
     with session_manager() as session: 
-        # create the list of transformations limited to 5 elements each
-        original = order.transformations[0]
-        original.received_time = datetime.now().timestamp() - start_epoch
-        num_trans = ceil(original.quantity/5)
-        transformations = [Transform(**original._to_dict()) for i in range(num_trans)]
-        order.transformations = transformations
-        total_qnt = 0
-        for trans in order.transformations:
-            trans.list_states = ptype_graph.find_path(
-                'P1',
-                getattr(trans, 'to')
-            )
-            trans.quantity = min(5, original.quantity-total_qnt)
-            total_qnt += trans.quantity
-        order.object_insert_or_nothing(session)
-
         # prioritize the orders
         orders = session.query(Order).all()
         for order in orders: 
@@ -122,25 +110,39 @@ def process_transformations(order):
                 for piece_id in get_piece_ids
             ]
             session.commit()
-            if len(trans.pieces) < trans.quantity:
-                print(f'\n\n===> INCOMPLETE TRANSFORMATION {trans.transform_id}<===')
-            elif len(trans.pieces) > trans.quantity:
-                print(f'=== {trans.transform_id}: {len(trans.pieces)} - {trans.quantity} ===')
-                print(get_piece_ids)
 
 
+def process_orders(orders):
+    TRANSFORMATION = False
+    for order_dict in orders:
+        order = Order(**order_dict)
+        if order.transformations != []: 
+            print('=== TRANSFORMATION ===')
+            TRANSFORMATION = True
+            with session_manager() as session: 
+                # create the list of transformations limited to MAX_PIECES_IN_TRANSFORMATION elements each
+                original = order.transformations[0]
+                original.received_time = datetime.now().timestamp() - start_epoch
+                num_trans = ceil(original.quantity/MAX_PIECES_IN_TRANSFORMATION)
+                transformations = [Transform(**original._to_dict()) for i in range(num_trans)]
+                order.transformations = transformations
+                total_qnt = 0
+                for trans in order.transformations:
+                    trans.list_states = ptype_graph.find_path(
+                        'P1',
+                        getattr(trans, 'to')
+                    )
+                    trans.quantity = min(MAX_PIECES_IN_TRANSFORMATION, original.quantity-total_qnt)
+                    total_qnt += trans.quantity
+                order.object_insert_or_nothing(session)
 
 
-def process_order(order_dict):
-    order = Order(**order_dict)
-    if order.transformations != []: 
-        print('=== PROCESS TRANSFORMATION ===')
-        process_transformations(order)
-
-    elif order.unloads != []: 
-        with session_manager() as session:
-            print('=== UNLOAD ===')
-            order.object_insert_or_nothing(session)
+        elif order.unloads != []: 
+            with session_manager() as session:
+                print('=== UNLOAD ===')
+                order.object_insert_or_nothing(session)
+    if TRANSFORMATION: 
+        process_transformations()
 
 
 def process_request_stores():
@@ -207,14 +209,13 @@ def thread2(shared_lock):
                 'Order': 'order'
             }
         ).get('orders')
-        print(erp_dict)
         if erp_dict.get('order') != None:
             print('=== ORDER ===')
-            for order_dict in erp_dict['order']: 
-                with shared_lock:
-                    print('ERP lock')
-                    process_order(order_dict)
-                    print('ERP unlock')
+            with shared_lock: 
+                start_time = time.time()
+                process_orders(erp_dict['order'])
+                print(f'===> Processed order in {time.time() - start_time}')
+
         elif 'request_stores' in erp_dict.keys() != None: 
             message = process_request_stores()
             bytesToSend = message.encode()

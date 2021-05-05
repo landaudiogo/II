@@ -169,6 +169,35 @@ order by priority desc, diff
 limit 1
 ```
 
+#### Pieces Unload Query
+```sql
+with 
+piece_type as (
+	select "type" , destination, unload_id
+	from mes.unload 
+	where 
+		destination in ({unload_list_str}) and 
+		(unloaded = false or unloaded is null) 
+	limit 1
+) 
+select 
+	piece_id as id, 
+	p.list_states[array_upper(p.list_states, 1)] as current_state, 
+	(select destination from piece_type) as destination,
+	(select unload_id from piece_type) as unload_id
+from mes.piece as p
+left join mes.transform as t
+	using(transform_id)
+where 
+	p.list_states[array_upper(p.list_states, 1)] = (select "type" from piece_type)
+	and  p.unload_id is null
+	and (
+		t.processed = true
+		or (p.transform_id is null)
+	)
+limit 1
+```
+
 ## Trigger functions
 
 Associate transformation when receiving a manually inserted piece in the wearhouse: 
@@ -308,6 +337,47 @@ create trigger add_start
 	on mes.piece
 	for each row
 	execute procedure mes.add_start();
+```
+
+Trigger to add a boolean to unload table, setting it to true in case all the pieces have been unloaded.
+```sql
+create or replace function mes.unload_id_update()
+	returns trigger
+	language plpgsql
+as $$
+declare 
+	quantity_unloaded integer;
+	quantity_to_unload integer;
+begin
+
+	if (new.unload_id is not null) then
+		quantity_unloaded := (
+			select count(*)
+			from mes.piece as p
+			where 
+				p.unload_id = new.unload_id
+		);
+		quantity_to_unload = (
+			select quantity
+			from mes.unload as u
+			where 
+				u.unload_id = new.unload_id
+		);
+		if quantity_unloaded = quantity_to_unload then
+			update mes.unload
+			set unloaded = true
+			where unload_id = new.unload_id;
+		end if;
+	end if;
+	return new;
+end;
+$$;
+
+create trigger unload_id_update
+	after update
+	on mes.piece
+	for each row
+	execute procedure mes.unload_id_update();
 ```
 
 
