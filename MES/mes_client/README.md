@@ -436,7 +436,7 @@ with
 			received_time as time1,
 			maxdelay,
 			penalty,
-			max("start") as "start",
+			min("start") as "start",
 			case 
 				when (-1 = ANY(array_agg("end")) IS NULL) then null
 				else max("end")

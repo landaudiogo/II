@@ -31,7 +31,7 @@ from ..models import (
 )
 
 
-MAX_PIECES_IN_TRANSFORMATION = 5
+MAX_PIECES_IN_TRANSFORMATION = 4
 
 
 # start_time

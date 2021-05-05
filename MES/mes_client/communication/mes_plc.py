@@ -49,7 +49,7 @@ def thread1(shared_lock):
             # Left side
             
             # leitura de variaveis
-            sleep(0.1)
+            sleep(0.01)
             with shared_lock:
                 state_L, ready_T2, ready_T3, curr_piece = warehouse_exit_ALT6_state(client)
                 if not curr_piece:
