@@ -1,4 +1,6 @@
 import threading
+import signal
+import sys
 
 from .mes_erp import thread2
 from .mes_plc import thread1
@@ -69,6 +71,12 @@ thread_mes_plc.start()
 thread_mes_erp.start()
 
 
+def signal_handler(sig, frame):
+    with shared_lock:
+        print('Closing safely')
+        sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 while True: 
     pass
 
