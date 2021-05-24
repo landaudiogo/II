@@ -494,15 +494,17 @@ select
 	t.penalty,
 	t."start",
 	t.end, 
-	(greatest(
-		coalesce(
-			t."end", 
-			extract(epoch from now())::integer - (select start_epoch from mes.mes_session)
-		) 
-		- t."time"
-		- t.maxdelay,
-		0
-	)/50::integer)*t.penalty as penaltyIncurred
+	ceiling(
+		greatest(
+			coalesce(
+				t."end", 
+				extract(epoch from now())::integer - (select start_epoch from mes.mes_session)
+			) 
+			- t."time"
+			- t.maxdelay,
+			0
+		)/50::real
+	)*t.penalty as penaltyIncurred
 from transformations as t
 left join count_not_started as c
 	using(order_number)	

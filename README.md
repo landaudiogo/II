@@ -1,3 +1,17 @@
+## Running Code
+
+from the directory ./MES run the following command: 
+```bash 
+python -m mes_client.communication.thread_process
+```
+
+to run the graphical interface, from ./MES run:
+```bash
+python -m mes_client.communication.statistics
+``` 
+
+
+
 ### Preferências:
 
 Manu - PLC, MES
