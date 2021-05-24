@@ -223,7 +223,7 @@ def request_orders_query(connection):
                     received_time as time1,
                     maxdelay,
                     penalty,
-                    max("start") as "start",
+                    min("start") as "start",
                     case 
                         when (-1 = ANY(array_agg("end")) IS NULL) then null
                         else max("end")
@@ -281,15 +281,17 @@ def request_orders_query(connection):
             t.penalty,
             t."start",
             t.end, 
-            (greatest(
-                coalesce(
-                    t."end", 
-                    extract(epoch from now())::integer - (select start_epoch from mes.mes_session)
-                ) 
-                - t."time"
-                - t.maxdelay,
-                0
-            )/50::integer)*t.penalty as penaltyIncurred
+            ceiling(
+                greatest(
+                    coalesce(
+                        t."end", 
+                        extract(epoch from now())::integer - (select start_epoch from mes.mes_session)
+                    ) 
+                    - t."time"
+                    - t.maxdelay,
+                    0
+                )/50::real
+            )*t.penalty as penaltyIncurred
         from transformations as t
         left join count_not_started as c
             using(order_number)	

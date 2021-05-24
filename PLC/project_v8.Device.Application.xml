@@ -158,6 +158,18 @@
       <UserDefElement iecname="done" type="T_BOOL" byteoffset="6" vartype="VAR" />
       <UserDefElement iecname="unload" type="T_INT" byteoffset="8" vartype="VAR" />
     </TypeUserDef>
+    <TypeUserDef name="T_stats_unload" size="20" nativesize="20" typeclass="Userdef" pouclass="STRUCTURE" iecname="stats_unload">
+      <UserDefElement iecname="stat_p1" type="T_INT" byteoffset="0" vartype="VAR" />
+      <UserDefElement iecname="stat_p2" type="T_INT" byteoffset="2" vartype="VAR" />
+      <UserDefElement iecname="stat_p3" type="T_INT" byteoffset="4" vartype="VAR" />
+      <UserDefElement iecname="stat_p4" type="T_INT" byteoffset="6" vartype="VAR" />
+      <UserDefElement iecname="stat_p5" type="T_INT" byteoffset="8" vartype="VAR" />
+      <UserDefElement iecname="stat_p6" type="T_INT" byteoffset="10" vartype="VAR" />
+      <UserDefElement iecname="stat_p7" type="T_INT" byteoffset="12" vartype="VAR" />
+      <UserDefElement iecname="stat_p8" type="T_INT" byteoffset="14" vartype="VAR" />
+      <UserDefElement iecname="stat_p9" type="T_INT" byteoffset="16" vartype="VAR" />
+      <UserDefElement iecname="Stat_total_p" type="T_INT" byteoffset="18" vartype="VAR" />
+    </TypeUserDef>
     <TypeUserDef name="T_IoConfigChannelMap" size="32" nativesize="32" typeclass="Userdef" pouclass="STRUCTURE" iecname="IoConfigChannelMap">
       <UserDefElement iecname="pParameter" type="T_POINTER_TO_IoConfigParameter" byteoffset="0" vartype="VAR" />
       <UserDefElement iecname="pbyIecAddress" type="T_POINTER_TO_BYTE" byteoffset="8" vartype="VAR" />
@@ -375,7 +387,7 @@
       <UserDefElement iecname="xConfirmError" type="T_BOOL" byteoffset="16" vartype="VAR_INPUT" inherited_from="T_ModbusTCPSlave" />
       <UserDefElement iecname="xDoInit" type="T_BOOL" byteoffset="17" vartype="VAR_INPUT" inherited_from="T_ModbusTCPSlave" />
     </TypeUserDef>
-    <TypeUserDef name="T_Pusher" size="801" nativesize="1616" typeclass="Userdef" pouclass="FUNCTION_BLOCK" iecname="Pusher">
+    <TypeUserDef name="T_Pusher" size="821" nativesize="1640" typeclass="Userdef" pouclass="FUNCTION_BLOCK" iecname="Pusher">
       <UserDefElement iecname="zona_dsc" type="T_INT" byteoffset="0" vartype="VAR_INPUT" />
       <UserDefElement iecname="a_receber_peca" type="T_BOOL" byteoffset="2" vartype="VAR_INPUT" />
       <UserDefElement iecname="peca" type="T_BOOL" byteoffset="3" vartype="VAR_INPUT" />
@@ -394,27 +406,28 @@
       <UserDefElement iecname="Pull" type="T_BOOL" byteoffset="25" vartype="VAR_OUTPUT" />
       <UserDefElement iecname="inf_tapete" type="T_conveyer" byteoffset="26" vartype="VAR_OUTPUT" />
       <UserDefElement iecname="a_enviar_peca" type="T_BOOL" byteoffset="36" vartype="VAR_OUTPUT" />
-      <UserDefElement iecname="_Pull" type="T_SFCActionType" byteoffset="40" vartype="VAR" />
-      <UserDefElement iecname="_tapete_livre" type="T_SFCActionType" byteoffset="168" vartype="VAR" />
-      <UserDefElement iecname="_M_tap" type="T_SFCActionType" byteoffset="296" vartype="VAR" />
-      <UserDefElement iecname="_a_enviar_peca" type="T_SFCActionType" byteoffset="424" vartype="VAR" />
-      <UserDefElement iecname="_Push" type="T_SFCActionType" byteoffset="552" vartype="VAR" />
-      <UserDefElement iecname="Inicio" type="T_SFCStepType" byteoffset="680" vartype="VAR" />
-      <UserDefElement iecname="Recolher_Pos_init" type="T_SFCStepType" byteoffset="696" vartype="VAR" />
-      <UserDefElement iecname="Livre" type="T_SFCStepType" byteoffset="712" vartype="VAR" />
-      <UserDefElement iecname="Receber_Peca" type="T_SFCStepType" byteoffset="728" vartype="VAR" />
-      <UserDefElement iecname="Recebido" type="T_SFCStepType" byteoffset="744" vartype="VAR" />
-      <UserDefElement iecname="Envia_Peca" type="T_SFCStepType" byteoffset="760" vartype="VAR" />
-      <UserDefElement iecname="Push_peca" type="T_SFCStepType" byteoffset="776" vartype="VAR" />
-      <UserDefElement iecname="Branch0__Inicio__to__Livre" type="T_BOOL" byteoffset="792" vartype="VAR" />
-      <UserDefElement iecname="Branch1__Inicio__to__Recolher_Pos_init" type="T_BOOL" byteoffset="793" vartype="VAR" />
-      <UserDefElement iecname="Recolher_Pos_init__to__Livre" type="T_BOOL" byteoffset="794" vartype="VAR" />
-      <UserDefElement iecname="Livre__to__Receber_Peca" type="T_BOOL" byteoffset="795" vartype="VAR" />
-      <UserDefElement iecname="Receber_Peca__to__Recebido" type="T_BOOL" byteoffset="796" vartype="VAR" />
-      <UserDefElement iecname="Branch0__Recebido__to__Envia_Peca" type="T_BOOL" byteoffset="797" vartype="VAR" />
-      <UserDefElement iecname="Envia_Peca__to__Inicio" type="T_BOOL" byteoffset="798" vartype="VAR" />
-      <UserDefElement iecname="Branch1__Recebido__to__Push_peca" type="T_BOOL" byteoffset="799" vartype="VAR" />
-      <UserDefElement iecname="Push_peca__to__Inicio" type="T_BOOL" byteoffset="800" vartype="VAR" />
+      <UserDefElement iecname="inf_pusher" type="T_stats_unload" byteoffset="38" vartype="VAR" />
+      <UserDefElement iecname="_Pull" type="T_SFCActionType" byteoffset="60" vartype="VAR" />
+      <UserDefElement iecname="_tapete_livre" type="T_SFCActionType" byteoffset="188" vartype="VAR" />
+      <UserDefElement iecname="_M_tap" type="T_SFCActionType" byteoffset="316" vartype="VAR" />
+      <UserDefElement iecname="_a_enviar_peca" type="T_SFCActionType" byteoffset="444" vartype="VAR" />
+      <UserDefElement iecname="_Push" type="T_SFCActionType" byteoffset="572" vartype="VAR" />
+      <UserDefElement iecname="Inicio" type="T_SFCStepType" byteoffset="700" vartype="VAR" />
+      <UserDefElement iecname="Recolher_Pos_init" type="T_SFCStepType" byteoffset="716" vartype="VAR" />
+      <UserDefElement iecname="Livre" type="T_SFCStepType" byteoffset="732" vartype="VAR" />
+      <UserDefElement iecname="Receber_Peca" type="T_SFCStepType" byteoffset="748" vartype="VAR" />
+      <UserDefElement iecname="Recebido" type="T_SFCStepType" byteoffset="764" vartype="VAR" />
+      <UserDefElement iecname="Envia_Peca" type="T_SFCStepType" byteoffset="780" vartype="VAR" />
+      <UserDefElement iecname="Push_peca" type="T_SFCStepType" byteoffset="796" vartype="VAR" />
+      <UserDefElement iecname="Branch0__Inicio__to__Livre" type="T_BOOL" byteoffset="812" vartype="VAR" />
+      <UserDefElement iecname="Branch1__Inicio__to__Recolher_Pos_init" type="T_BOOL" byteoffset="813" vartype="VAR" />
+      <UserDefElement iecname="Recolher_Pos_init__to__Livre" type="T_BOOL" byteoffset="814" vartype="VAR" />
+      <UserDefElement iecname="Livre__to__Receber_Peca" type="T_BOOL" byteoffset="815" vartype="VAR" />
+      <UserDefElement iecname="Receber_Peca__to__Recebido" type="T_BOOL" byteoffset="816" vartype="VAR" />
+      <UserDefElement iecname="Branch0__Recebido__to__Envia_Peca" type="T_BOOL" byteoffset="817" vartype="VAR" />
+      <UserDefElement iecname="Envia_Peca__to__Inicio" type="T_BOOL" byteoffset="818" vartype="VAR" />
+      <UserDefElement iecname="Branch1__Recebido__to__Push_peca" type="T_BOOL" byteoffset="819" vartype="VAR" />
+      <UserDefElement iecname="Push_peca__to__Inicio" type="T_BOOL" byteoffset="820" vartype="VAR" />
     </TypeUserDef>
     <TypeUserDef name="T_Tapete_Armazem_Entrada" size="710" nativesize="1360" typeclass="Userdef" pouclass="FUNCTION_BLOCK" iecname="Tapete_Armazem_Entrada">
       <UserDefElement iecname="peca" type="T_BOOL" byteoffset="0" vartype="VAR_INPUT" />
